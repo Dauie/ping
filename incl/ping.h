@@ -10,10 +10,7 @@
 #include <stdio.h>
 #include <sys/types.h>
 #include <sys/socket.h>
-#include <sys/socket.h>
 
-
-#include "./msg_types_codes.h"
 #include "../libft/incl/return_types.h"
 #include "../libft/incl/bool.h"
 #include "../libft/incl/cnvrsn.h"
@@ -28,6 +25,13 @@
 *
 * -h Show help.
 **/
+
+typedef enum	e_msg_sizes
+{
+	INFOREQ_MSG_SZ = 8,
+	DFLT_MSG_SZ = 12,
+	TIMESTMP_MSG_SZ = 32,
+}				t_msg_sizes;
 
 //typedef unsigned short u_short;
 
