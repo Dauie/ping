@@ -1,6 +1,5 @@
 #include "../incl/ping.h"
 
-
 void	add_type(void *mem, int type)
 {
 	char	*m;

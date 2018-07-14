@@ -6,8 +6,6 @@
 
 #include <arpa/inet.h>
 #include <netdb.h>
-#include <netinet/in.h>
-#include <netinet/ip_icmp.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <sys/types.h>
@@ -44,7 +42,7 @@ typedef struct		s_icmp_hdr
 
 typedef	struct 		s_ip_hdr
 {
-	u_char			vihl;
+	u_char			hl;
 	u_char			tos;
 	short 			totlen;
 	short 			flags;
@@ -60,7 +58,7 @@ typedef struct		s_echo_reply
 	t_ip_hdr		ip_hdr;
 	t_icmp_hdr		icmp_hdr;
 	char 			pad[256];
-};
+}					t_echorply;
 
 typedef struct		s_flags
 {

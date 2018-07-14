@@ -15,7 +15,7 @@ LIBFT = ./libft/libftprintf.a
 
 MAIN = main.c
 
-SRC = packet_util.c struct_init.c
+SRC = packet_util.c struct_init.c socket.c ping.c
 
 SRCFILES = $(addprefix $(SRCDIR)/, $(SRC))
 
@@ -24,7 +24,6 @@ RM = rm -fr
 $(NAME):
 		$(MAKE) -C ./libft/ re
 		$(CC) $(CFLAGS) $(INCL) $(MAIN) $(SRCFILES) $(LIBFT) -o $(NAME)
-		ln -s $(NAME) libft_malloc.so
 
 clean:
 		$(RM) $(OBJDIR)
