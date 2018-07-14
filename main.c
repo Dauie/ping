@@ -7,6 +7,38 @@ static void			useage(void)
 	exit(SUCCESS);
 }
 
+static struct ifaddrs	*find_useable_src(struct ifaddrs *addrs)
+{
+	while (addrs)
+	{
+		if (addrs->ifa_addr && (addrs->ifa_flags & IFF_UP))
+		{
+			if (addrs->ifa_addr->sa_family == AF_INET &&
+				((struct sockaddr_in *)addrs->ifa_addr)->sin_addr.s_addr !=
+						0x7f000001)
+				return (addrs);
+		}
+		addrs = addrs->ifa_next;
+	}
+	return (NULL);
+}
+
+static void		get_source(t_mgr *mgr)
+{
+	struct ifaddrs	*addrs;
+	struct ifaddrs	*src;
+
+	if (getifaddrs(&addrs) != 0 || !(src = find_useable_src(addrs)))
+	{
+		dprintf(STDERR_FILENO, "ping: could not find suitable IP for localhost");
+		exit(FAILURE);
+	}
+	inet_ntop(AF_INET, &((struct sockaddr_in *) src->ifa_addr)->sin_addr,
+			  mgr->saddr, sizeof(mgr->saddr));
+	printf("%s\n", mgr->saddr);
+	freeifaddrs(addrs);
+}
+
 static void		get_destination(t_mgr *mgr, char *dst)
 {
 	struct addrinfo hints;
@@ -22,8 +54,9 @@ static void		get_destination(t_mgr *mgr, char *dst)
 		exit(FAILURE);
 	}
 	inet_ntop(AF_INET, &((struct sockaddr_in *) infoptr->ai_addr)->sin_addr,
-			  mgr->addr, sizeof(mgr->addr));
-	printf("%s\n", mgr->addr);
+			  mgr->saddr, sizeof(mgr->saddr));
+	printf("%s\n", mgr->saddr);
+	freeaddrinfo(infoptr);
 }
 
 static void		set_option(t_mgr *mgr, char opt, char **av, int *i)
@@ -71,6 +104,7 @@ int				main(int ac, char **av)
 	init_mgr(&mgr);
 	if (ac == 1)
 		useage();
+	get_source(&mgr);
 	parse_arguments(&mgr, ac, av);
 	create_socket(&mgr);
 	ping(&mgr);

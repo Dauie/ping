@@ -1,6 +1,9 @@
 #ifndef PING_H
 #define PING_H
 
+# define IPV4_HDRLEN 20
+# define ICMP_HDRLEN 8
+# define IP_MAXPACKET 65535
 # define IPV4_ADDR_LEN 16
 # define DOMAIN_NAME_LEN 253
 
@@ -10,6 +13,8 @@
 #include <stdio.h>
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <ifaddrs.h>
+#include <net/if.h>
 
 #include "../libft/incl/return_types.h"
 #include "../libft/incl/bool.h"
@@ -26,43 +31,36 @@
 * -h Show help.
 **/
 
-typedef enum	e_msg_sizes
-{
-	INFOREQ_MSG_SZ = 8,
-	DFLT_MSG_SZ = 12,
-	TIMESTMP_MSG_SZ = 32,
-}				t_msg_sizes;
-
-//typedef unsigned short u_short;
-
 typedef struct		s_icmp_hdr
 {
 	uint8_t			type;
 	uint8_t			code;
-	u_short			checksum;
-	u_short			id;
-	u_short			seq;
+	uint16_t		checksum;
+	uint16_t		id;
+	uint16_t		seq;
 }					t_icmp_hdr;
 
 typedef	struct 		s_ip_hdr
 {
-	u_char			hl;
-	u_char			tos;
-	short 			totlen;
-	short 			flags;
-	u_char 			ttl;
-	u_char 			proto;
-	u_short 		checksum;
-	struct in_addr	src;
-	struct in_addr	dst;
+	uint8_t			ihl: 4,
+					version: 4;
+	u_int8_t		tos;
+	u_int16_t		tot_len;
+	u_int16_t		id;
+	u_int16_t		frag_off;
+	u_int8_t		ttl;
+	u_int8_t		proto;
+	u_int16_t		checksum;
+	u_int32_t		saddr;
+	u_int32_t		daddr;
 }					t_ip_hdr;
 
-typedef struct		s_echo_reply
+typedef struct		s_echo
 {
-	t_ip_hdr		ip_hdr;
+	t_ip_hdr		ip;
 	t_icmp_hdr		icmp_hdr;
-	char 			pad[256];
-}					t_echorply;
+	char			pad[256];
+}					t_echo;
 
 typedef struct		s_flags
 {
@@ -83,11 +81,12 @@ typedef struct		s_manager
 {
 	pid_t			pid;
 	uid_t			uid;
-	int 			sock;
+	int				sock;
 	unsigned short	seq;
 	size_t			count;
-	char 			domain[DOMAIN_NAME_LEN];
-	char			addr[IPV4_ADDR_LEN];
+	char			domain[DOMAIN_NAME_LEN];
+	char			daddr[IPV4_ADDR_LEN];
+	char 			saddr[IPV4_ADDR_LEN];
 	t_stats			stats;
 	t_flags			flags;
 }					t_mgr;
