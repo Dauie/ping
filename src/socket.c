@@ -1,5 +1,5 @@
 #include "../incl/ping.h"
-#include <errno.h>
+
 
 int		setopt(t_mgr *mgr)
 {

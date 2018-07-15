@@ -7,14 +7,18 @@
 # define IPV4_ADDR_LEN 16
 # define DOMAIN_NAME_LEN 253
 
+#include <errno.h>
 #include <arpa/inet.h>
 #include <netdb.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <sys/types.h>
 #include <sys/socket.h>
-#include <ifaddrs.h>
 #include <net/if.h>
+#include <netinet/ip.h>
+#include <netinet/ip_icmp.h>
+#include <ifaddrs.h>
+
 
 #include "../libft/incl/return_types.h"
 #include "../libft/incl/bool.h"
@@ -30,6 +34,24 @@
 *
 * -h Show help.
 **/
+
+typedef __uint16_t n_short;
+
+typedef enum	e_msg_types
+{
+	TYPE_ECHO_RPLY = 0,
+	TYPE_DST_UNRCH = 3,
+	TYPE_SRC_QUNCH = 4,
+	TYPE_REDIRECT = 5,
+	TYPE_ECHO_REQ = 8,
+	TYPE_TIME_EXCD = 11,
+	TYPE_PARAM_PRBLM = 12,
+	TYPE_TIME_STMP = 13,
+	TYPE_TSTMP_RPLY = 14,
+	TYPE_INFO_REQ = 15,
+	TYPE_INFO_RPLY = 16
+
+}				t_msg_types;
 
 typedef struct		s_icmp_hdr
 {
@@ -59,7 +81,7 @@ typedef struct		s_echo
 {
 	t_ip_hdr		ip;
 	t_icmp_hdr		icmp_hdr;
-	char			pad[256];
+	char			data[256];
 }					t_echo;
 
 typedef struct		s_flags
@@ -95,6 +117,7 @@ void				add_type(void *mem, int type);
 void				add_code(void *mem, int code);
 void				add_checksum(void *mem, int code);
 void				add_identifier(void *mem, pid_t pid);
+u_short				checksum(u_short *buff, int nwords);
 void				add_sequence(void *mem, unsigned short *seq);
 int					create_socket(t_mgr *mgr);
 void				init_mgr(t_mgr *mgr);

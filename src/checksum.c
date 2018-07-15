@@ -1,5 +1,6 @@
+#include "../incl/ping.h"
 
-u_short checksum(u_short *buff, int nwords)
+u_short checksum(u_int16_t *buff, int nwords)
 {
 	u_long sum;
 
@@ -12,5 +13,5 @@ u_short checksum(u_short *buff, int nwords)
 	}
 	sum = (sum >> 16) + (sum & 65535);
 	sum += (sum >> 16);
-	return(~sum);
+	return((u_short)~sum);
 }

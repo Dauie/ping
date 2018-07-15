@@ -14,8 +14,7 @@ static struct ifaddrs	*find_useable_src(struct ifaddrs *addrs)
 		if (addrs->ifa_addr && (addrs->ifa_flags & IFF_UP))
 		{
 			if (addrs->ifa_addr->sa_family == AF_INET &&
-				((struct sockaddr_in *)addrs->ifa_addr)->sin_addr.s_addr !=
-						0x7f000001)
+				((struct sockaddr_in *)addrs->ifa_addr)->sin_addr.s_addr != htonl(2130706433UL))
 				return (addrs);
 		}
 		addrs = addrs->ifa_next;
