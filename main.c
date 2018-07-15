@@ -53,8 +53,8 @@ static void		get_destination(t_mgr *mgr, char *dst)
 		exit(FAILURE);
 	}
 	inet_ntop(AF_INET, &((struct sockaddr_in *) infoptr->ai_addr)->sin_addr,
-			  mgr->saddr, sizeof(mgr->saddr));
-	printf("%s\n", mgr->saddr);
+			  mgr->daddr, sizeof(mgr->daddr));
+	printf("%s\n", mgr->daddr);
 	freeaddrinfo(infoptr);
 }
 

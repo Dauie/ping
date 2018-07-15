@@ -24,6 +24,7 @@ static void			fill_ip_header(t_mgr *mgr, t_ip_hdr *ip, int datalen)
 		dprintf(STDERR_FILENO, "Error inet_pton() 1. %s\n", strerror(errno));
 		exit(FAILURE);
 	}
+	printf("%ul", ip->daddr);
 	if (inet_pton(AF_INET, mgr->daddr, &(ip->daddr)) <= 0)
 	{
 		dprintf(STDERR_FILENO, "Error inet_pton() 2. %s\n", strerror(errno));
