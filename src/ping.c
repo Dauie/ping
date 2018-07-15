@@ -19,12 +19,12 @@ static void			fill_ip_header(t_mgr *mgr, t_ip_hdr *ip, int datalen)
 	ip->frag_off = htons(0);
 	ip->ttl = 255;
 	ip->proto = IPPROTO_ICMP;
-	if (inet_pton(AF_INET, mgr->saddr, &(ip->saddr)) != 1)
+	if (inet_pton(AF_INET, mgr->saddr, &(ip->saddr)) <= 0)
 	{
 		dprintf(STDERR_FILENO, "Error inet_pton() 1. %s\n", strerror(errno));
 		exit(FAILURE);
 	}
-	if (inet_pton(AF_INET, mgr->daddr, &(ip->daddr)) != 1)
+	if (inet_pton(AF_INET, mgr->daddr, &(ip->daddr)) <= 0)
 	{
 		dprintf(STDERR_FILENO, "Error inet_pton() 2. %s\n", strerror(errno));
 		exit(FAILURE);
