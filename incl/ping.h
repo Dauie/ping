@@ -117,7 +117,7 @@ void				add_type(void *mem, int type);
 void				add_code(void *mem, int code);
 void				add_checksum(void *mem, int code);
 void				add_identifier(void *mem, pid_t pid);
-u_short				checksum(u_short *buff, int nwords);
+u_short				checksum(void *buff, int nwords);
 void				add_sequence(void *mem, unsigned short *seq);
 int					create_socket(t_mgr *mgr);
 void				init_mgr(t_mgr *mgr);
