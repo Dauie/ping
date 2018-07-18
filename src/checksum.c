@@ -14,7 +14,7 @@ u_int16_t checksum(void *data, size_t len)
 		accum += ntohs(word);
 		if (accum > 0xffff)
 			accum -= 0xffff;
-		i++;
+		i += 2;
 	}
 	if (len == 1)
 	{
