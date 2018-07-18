@@ -8,13 +8,13 @@
 # define DOMAIN_NAME_LEN 253
 
 #include <errno.h>
-#include <arpa/inet.h>
-#include <netdb.h>
 #include <stdint.h>
-#include <stdio.h>
 #include <sys/types.h>
+#include <stdio.h>
 #include <sys/socket.h>
+#include <netdb.h>
 #include <net/if.h>
+#include <arpa/inet.h>
 #include <netinet/ip.h>
 #include <netinet/ip_icmp.h>
 #include <ifaddrs.h>
@@ -51,34 +51,10 @@ typedef enum	e_msg_types
 
 }				t_msg_types;
 
-typedef struct		s_icmp_hdr
-{
-	uint8_t			type;
-	uint8_t			code;
-	uint16_t		checksum;
-	uint16_t		id;
-	uint16_t		seq;
-}					t_icmp_hdr;
-
-typedef	struct 		s_ip_hdr
-{
-	uint8_t			ihl: 4,
-					version: 4;
-	u_int8_t		tos;
-	u_int16_t		tot_len;
-	u_int16_t		id;
-	u_int16_t		frag_off;
-	u_int8_t		ttl;
-	u_int8_t		proto;
-	u_int16_t		checksum;
-	u_int32_t		saddr;
-	u_int32_t		daddr;
-}					t_ip_hdr;
-
 typedef struct		s_echo
 {
-	t_ip_hdr		ip;
-	t_icmp_hdr		icmp_hdr;
+	struct ip		ip;
+	struct icmp		icmp;
 	char			data[256];
 }					t_echo;
 

@@ -1,31 +1,30 @@
 #include "../incl/ping.h"
 
-static void			fill_icmp_header(t_mgr *mgr, t_echo *msg, t_icmp_hdr *icmp, u_short datalen)
+static void			fill_icmp_header(t_mgr *mgr, t_echo *msg, struct icmp *icmp, u_short datalen)
 {
-	icmp->type = ICMP_ECHO;
-	icmp->code = 0;
-	icmp->id = htons(mgr->pid);
-	icmp->seq = htons(mgr->seq);
-	icmp->checksum = checksum((u_int16_t *)msg + IPV4_HDRLEN, ICMP_HDRLEN + datalen);
+	icmp->icmp_type = ICMP_ECHO;
+	icmp->icmp_code = 0;
+	icmp->icmp_hun.ih_idseq.icd_id = htons(mgr->pid);
+	icmp->icmp_hun.ih_idseq.icd_seq = htons(mgr->seq);
+	icmp->icmp_cksum = checksum(msg + IPV4_HDRLEN, ICMP_HDRLEN + datalen);
 }
 
-static void			fill_ip_header(t_mgr *mgr, t_ip_hdr *ip, int datalen)
+static void			fill_ip_header(t_mgr *mgr, struct ip *ip, int datalen)
 {
-	ip->ihl = IPV4_HDRLEN / sizeof(uint32_t);
-	ip->version = 4;
-	ip->tos = 0;
-	ip->tot_len = htons(IPV4_HDRLEN + ICMP_HDRLEN + datalen);
-	ip->id = htons(0);
-	ip->frag_off = htons(0);
-	ip->ttl = 255;
-	ip->proto = IPPROTO_ICMP;
-	if (inet_pton(AF_INET, mgr->saddr, &(ip->saddr)) <= 0)
+	ip->ip_hl = IPV4_HDRLEN / sizeof(uint32_t);
+	ip->ip_v = 4;
+	ip->ip_tos = 0;
+	ip->ip_len = htons(IPV4_HDRLEN + ICMP_HDRLEN + datalen);
+	ip->ip_id = htons(0);
+	ip->ip_off = htons(0);
+	ip->ip_ttl = 255;
+	ip->ip_p = IPPROTO_ICMP;
+	if (inet_pton(AF_INET, mgr->saddr, &(ip->ip_src.s_addr)) <= 0)
 	{
 		dprintf(STDERR_FILENO, "Error inet_pton() 1. %s\n", strerror(errno));
 		exit(FAILURE);
 	}
-	printf("%ul", ip->daddr);
-	if (inet_pton(AF_INET, mgr->daddr, &(ip->daddr)) <= 0)
+	if (inet_pton(AF_INET, mgr->daddr, &(ip->ip_dst.s_addr)) <= 0)
 	{
 		dprintf(STDERR_FILENO, "Error inet_pton() 2. %s\n", strerror(errno));
 		exit(FAILURE);
@@ -42,10 +41,10 @@ int						ping(t_mgr *mgr)
 	ft_strcpy(echo.data, "FT ECHO REQUEST");
 	datalen = (u_short)ft_strlen(echo.data);
 	fill_ip_header(mgr, &echo.ip, datalen);
-	fill_icmp_header(mgr, &echo, &echo.icmp_hdr, datalen);
+	fill_icmp_header(mgr, &echo, &echo.icmp, datalen);
 	ft_memset(&sin, 0, sizeof (struct sockaddr_in));
 	sin.sin_family = AF_INET;
-	sin.sin_addr.s_addr = echo.ip.daddr;
+	sin.sin_addr.s_addr = echo.ip.ip_dst.s_addr;
 	if (sendto(mgr->sock, &echo, IPV4_HDRLEN + ICMP_HDRLEN + datalen, 0,
 		   (struct sockaddr *)&sin, sizeof(struct sockaddr)) < 0)
 	{
