@@ -1,17 +1,29 @@
 #include "../incl/ping.h"
 
-u_short checksum(void *b, int len)
+u_int16_t checksum(void *buff, size_t nwords)
 {
-	u_short *buf = b;
-	unsigned int sum=0;
-	u_short result;
+	u_int8_t	*data;
+	u_int16_t	word;
+	u_int32_t	accum;
+	size_t		i;
 
-	for ( sum = 0; len > 1; len -= 2 )
-		sum += *buf++;
-	if ( len == 1 )
-		sum += *(unsigned char*)buf;
-	sum = (sum >> 16) + (sum & 0xFFFF);
-	sum += (sum >> 16);
-	result = ~sum;
-	return result;
+	data = (uint8_t *)buff;
+	accum = 0xffff;
+	i = 0;
+	while (i < nwords)
+	{
+		ft_memcpy(&word, data + i, 2);
+		accum += ntohs(word);
+		if (accum > 0xffff)
+			accum -= 0xffff;
+		i++;
+	}
+	if (nwords == 1)
+	{
+		word = 0;
+		ft_memcpy(&word, data + nwords - 1, 1);
+		accum += ntohs(word);
+		if (accum > 0xffff)
+			accum -= 0xffff;
+	}
 }
