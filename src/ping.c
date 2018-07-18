@@ -46,8 +46,8 @@ int 					ping_loop(t_mgr *mgr, t_echo *echo, struct sockaddr_in *sin)
 {
 	while (mgr->count)
 	{
-		if (sendto(mgr->sock, &echo, IPV4_HDRLEN + ICMP_HDRLEN + echo->datalen, 0,
-				   (struct sockaddr *)&sin, sizeof(struct sockaddr)) < 0)
+		if (sendto(mgr->sock, echo, IPV4_HDRLEN + ICMP_HDRLEN + echo->datalen, 0,
+				   (struct sockaddr *)sin, sizeof(struct sockaddr)) < 0)
 		{
 			dprintf(STDERR_FILENO, "Error sendto(). %s\n", strerror(errno));
 			exit(FAILURE);
