@@ -6,7 +6,7 @@ static void			fill_icmp_header(t_mgr *mgr, t_echo *msg, struct icmp *icmp, u_sho
 	icmp->icmp_code = 0;
 	icmp->icmp_hun.ih_idseq.icd_id = htons(mgr->pid);
 	icmp->icmp_hun.ih_idseq.icd_seq = htons(mgr->seq);
-	icmp->icmp_cksum = checksum(msg + IPV4_HDRLEN, ICMP_HDRLEN + datalen);
+	icmp->icmp_cksum = checksum((u_int8_t *)msg + IPV4_HDRLEN, ICMP_HDRLEN + datalen);
 }
 
 static void			fill_ip_header(t_mgr *mgr, struct ip *ip, int datalen)
