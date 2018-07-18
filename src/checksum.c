@@ -8,7 +8,7 @@ u_int16_t checksum(void *data, size_t len)
 
 	accum = 0xffff;
 	i = 0;
-	while (i < len)
+	while (i + 1 < len)
 	{
 		ft_memcpy(&word, (uint8_t *)data + i, 2);
 		accum += ntohs(word);
