@@ -37,17 +37,17 @@ int						ping(t_mgr *mgr)
 	struct sockaddr_in	sin;
 	t_echo				echo;
 	u_short				datalen;
-//	u_int8_t			packet[IP_MAXPACKET];
+	u_int8_t			packet[IP_MAXPACKET];
 
 	ft_strcpy(echo.data, "FT ECHO REQUEST");
 	datalen = (u_short)ft_strlen(echo.data);
 	fill_ip_header(mgr, &echo.ip, datalen);
 	fill_icmp_header(mgr, &echo, &echo.icmp, datalen);
-//	ft_memset(packet, 0, IP_MAXPACKET);
-//	ft_memcpy(packet, &echo.ip, IPV4_HDRLEN);
-//	ft_memcpy(packet + IPV4_HDRLEN, &echo.icmp, ICMP_HDRLEN);
-//	ft_memcpy(packet + IPV4_HDRLEN + ICMP_HDRLEN, &echo.data, datalen);
-//	ft_memset(&sin, 0, sizeof (struct sockaddr_in));
+	ft_memset(packet, 0, IP_MAXPACKET);
+	ft_memcpy(packet, &echo.ip, IPV4_HDRLEN);
+	ft_memcpy(packet + IPV4_HDRLEN, &echo.icmp, ICMP_HDRLEN);
+	ft_memcpy(packet + IPV4_HDRLEN + ICMP_HDRLEN, &echo.data, datalen);
+	ft_memset(&sin, 0, sizeof (struct sockaddr_in));
 	sin.sin_family = AF_INET;
 	sin.sin_addr.s_addr = echo.ip.ip_dst.s_addr;
 	if (sendto(mgr->sock, &echo, IPV4_HDRLEN + ICMP_HDRLEN + datalen, 0,
