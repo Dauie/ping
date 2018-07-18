@@ -1,10 +1,10 @@
 #ifndef PING_H
 #define PING_H
 
-# define IPV4_HDRLEN 20
-# define ICMP_HDRLEN 8
+# define IPV4_HDRLEN sizeof(struct ip)
+# define ICMP_HDRLEN sizeof(struct icmp)
 # define IP_MAXPACKET 65535
-# define IPV4_ADDR_LEN 16
+# define IPV4_ADDR_LEN sizeof(struct sockaddr_in)
 # define DOMAIN_NAME_LEN 253
 
 #include <errno.h>
