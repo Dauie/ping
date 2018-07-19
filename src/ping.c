@@ -58,22 +58,30 @@ void 					fill_packet(u_int8_t *packet, t_echo *echo)
 
 int 					ping_loop(t_mgr *mgr, t_echo *echo, struct sockaddr_in *sin)
 {
-	u_int8_t packet[IP_MAXPACKET];
+	struct timeval	then;
+	struct timeval	now;
+	u_int8_t		packet[IP_MAXPACKET];
 
+	gettimeofday(&then, NULL);
 	while (mgr->count)
 	{
-		ft_memset(packet, 0, IP_MAXPACKET);
-		fill_packet(packet, echo);
-		if (sendto(mgr->sock, packet, (IPV4_HDRLEN + ICMP_HDRLEN +
-				sizeof(echo->time) + echo->datalen), 0,
-					(struct sockaddr *)sin, sizeof(struct sockaddr)) < 0)
+		gettimeofday(&now, NULL);
+		if (now.tv_sec - then.tv_sec > 3)
 		{
-			dprintf(STDERR_FILENO, "Error sendto(). %s\n", strerror(errno));
-			exit(FAILURE);
+			ft_memset(packet, 0, IP_MAXPACKET);
+			fill_packet(packet, echo);
+			if (sendto(mgr->sock, packet, (IPV4_HDRLEN + ICMP_HDRLEN +
+										   sizeof(echo->time) + echo->datalen), 0,
+					   (struct sockaddr *)sin, sizeof(struct sockaddr)) < 0)
+			{
+				dprintf(STDERR_FILENO, "Error sendto(). %s\n", strerror(errno));
+				exit(FAILURE);
+			}
+			if (mgr->flags.count == TRUE)
+				mgr->count -= 1;
+			echo->icmp.icmp_hun.ih_idseq.icd_seq = ntohs(++mgr->seq);
+			gettimeofday(&then, NULL);
 		}
-		if (mgr->flags.count == TRUE)
-			mgr->count -= 1;
-		echo->icmp.icmp_hun.ih_idseq.icd_seq = ntohs(++mgr->seq);
 	}
 	return (SUCCESS);
 }
@@ -83,7 +91,7 @@ int						ping(t_mgr *mgr)
 	struct sockaddr_in	sin;
 	t_echo				echo;
 
-	ft_strcpy(echo.data, "                  !\"#$%&'()*+,-./01234567");
+	ft_strcpy(echo.data, "                !\"#$%&'()*+,-./01234567");
 	echo.datalen = (u_short)ft_strlen(echo.data);
 	init_ip_header(mgr, &echo.ip, &echo);
 	init_icmp_header_request(mgr, &echo.icmp);
