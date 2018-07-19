@@ -11,7 +11,7 @@ static void				init_icmp_header_request(t_mgr *mgr, struct icmp *icmp)
 	icmp->icmp_type = ICMP_ECHO;
 	icmp->icmp_code = 0;
 	icmp->icmp_hun.ih_idseq.icd_id = htons(mgr->pid);
-	icmp->icmp_hun.ih_idseq.icd_seq = htons(1);
+	icmp->icmp_hun.ih_idseq.icd_seq = htons(mgr->seq);
 }
 
 static void				init_ip_header(t_mgr *mgr, struct ip *ip, t_echo *echo)
@@ -73,7 +73,7 @@ int 					ping_loop(t_mgr *mgr, t_echo *echo, struct sockaddr_in *sin)
 		}
 		if (mgr->flags.count == TRUE)
 			mgr->count -= 1;
-		echo->icmp.icmp_hun.ih_idseq.icd_seq = ntohs(echo->icmp.icmp_hun.ih_idseq.icd_seq++);
+		echo->icmp.icmp_hun.ih_idseq.icd_seq = ntohs(++mgr->seq);
 	}
 	return (SUCCESS);
 }
@@ -83,7 +83,7 @@ int						ping(t_mgr *mgr)
 	struct sockaddr_in	sin;
 	t_echo				echo;
 
-	ft_strcpy(echo.data, "!\"#$%&'()*+,-./0123456");
+	ft_strcpy(echo.data, "!\"#$%&'()*+,-./01234567");
 	echo.datalen = (u_short)ft_strlen(echo.data);
 	init_ip_header(mgr, &echo.ip, &echo);
 	init_icmp_header_request(mgr, &echo.icmp);

@@ -88,9 +88,10 @@ typedef struct		s_manager
 	uid_t			uid;
 	int				sock;
 	size_t			count;
+	size_t			seq;
 	char			domain[DOMAIN_NAME_LEN];
 	char			daddr[IPV4_ADDR_LEN];
-	char 			saddr[IPV4_ADDR_LEN];
+	char			saddr[IPV4_ADDR_LEN];
 	t_stats			stats;
 	t_flags			flags;
 }					t_mgr;
