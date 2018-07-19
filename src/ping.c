@@ -2,7 +2,7 @@
 
 static u_int16_t 		update_checksum(t_echo *echo, u_int8_t *packet)
 {
-	return (checksum(packet + IPV4_HDRLEN,
+	return (checksum((u_int16_t *)(packet + IPV4_HDRLEN),
 			ICMP_HDRLEN + sizeof(echo->time) + echo->datalen));
 }
 
