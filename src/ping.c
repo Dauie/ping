@@ -66,13 +66,13 @@ int 					ping_loop(t_mgr *mgr, t_echo *echo, struct sockaddr_in *sin)
 	while (mgr->count)
 	{
 		gettimeofday(&now, NULL);
-		if (now.tv_sec - then.tv_sec > 1)
+		if (now.tv_usec - then.tv_usec > 500)
 		{
 			ft_memset(packet, 0, IP_MAXPACKET);
 			fill_packet(packet, echo);
 			if (sendto(mgr->sock, packet, (IPV4_HDRLEN + ICMP_HDRLEN +
-										   sizeof(echo->time) + echo->datalen), 0,
-					   (struct sockaddr *)sin, sizeof(struct sockaddr)) < 0)
+				sizeof(echo->time) + echo->datalen), 0,
+					(struct sockaddr *)sin, sizeof(struct sockaddr)) < 0)
 			{
 				dprintf(STDERR_FILENO, "Error sendto(). %s\n", strerror(errno));
 				exit(FAILURE);
