@@ -63,19 +63,16 @@ int 					ping_loop(t_mgr *mgr, t_echo *echo, struct sockaddr_in *sin)
 	u_int8_t		packet[IP_MAXPACKET];
 	struct msghdr	resp;
 	struct cmsghdr	*cmsg;
-	struct iovec	iov;
-	u_int8_t 		buff[128];
 	u_int8_t		ctrlbuff[256];
 	ssize_t 		rbyte;
 
-	iov.iov_base = buff;
-	iov.iov_len = 128;
 	resp.msg_name = NULL;
 	resp.msg_namelen = sizeof(struct sockaddr);
-	resp.msg_iov = &iov;
-	resp.msg_iovlen = 1;
+	resp.msg_iov = NULL;
+	resp.msg_iovlen = 0;
 	resp.msg_control = ctrlbuff;
-	resp.msg_controllen = (sizeof(struct cmsghdr) + IPV4_HDRLEN + ICMP_HDRLEN + sizeof(echo->time) + echo->datalen);
+	resp.msg_controllen = (sizeof(struct cmsghdr) +
+		IPV4_HDRLEN + ICMP_HDRLEN + sizeof(echo->time) + echo->datalen);
 	gettimeofday(&then, NULL);
 	signal(SIGALRM, alarm_handel_timeout);
 	while (mgr->count)
@@ -102,6 +99,7 @@ int 					ping_loop(t_mgr *mgr, t_echo *echo, struct sockaddr_in *sin)
 				dprintf(STDERR_FILENO, "Error recvmsg().%s\n", strerror(errno));
 				exit(FAILURE);
 			} else {
+				printf("Recieved something! %zu\n", rbyte);
 				alarm(0);
 				cmsg = (struct cmsghdr *) resp.msg_control;
 				(void) cmsg;
