@@ -78,7 +78,6 @@ int 					ping_loop(t_mgr *mgr, t_echo *echo, struct sockaddr_in *sin)
 	resp.msg_controllen = (sizeof(struct cmsghdr) + IPV4_HDRLEN + ICMP_HDRLEN + sizeof(echo->time) + echo->datalen);
 	gettimeofday(&then, NULL);
 	signal(SIGALRM, alarm_handel_timeout);
-	alarm(2);
 	while (mgr->count)
 	{
 		gettimeofday(&now, NULL);
@@ -94,6 +93,7 @@ int 					ping_loop(t_mgr *mgr, t_echo *echo, struct sockaddr_in *sin)
 				dprintf(STDERR_FILENO, "Error sendto(). %s\n", strerror(errno));
 				exit(FAILURE);
 			}
+			alarm(2);
 			if (mgr->flags.count == TRUE)
 				mgr->count -= 1;
 			echo->icmp.icmp_hun.ih_idseq.icd_seq = ntohs(++mgr->seq);
