@@ -1,16 +1,21 @@
 #include <netinet/ip_icmp.h>
 #include "../incl/ping.h"
 
+static u_int16_t 		update_checksum(t_echo *echo)
+{
+	echo->icmp.icmp_cksum = 0;
+	return (checksum((u_int8_t *)echo + IPV4_HDRLEN,
+								ICMP_HDRLEN + echo->datalen));
+}
+
 static void				fill_icmp_header(t_mgr *mgr, t_echo *echo,
 											struct icmp *icmp)
 {
 	icmp->icmp_type = ICMP_ECHO;
 	icmp->icmp_code = 0;
-	icmp->icmp_cksum = 0;
 	icmp->icmp_hun.ih_idseq.icd_id = htons(mgr->pid);
 	icmp->icmp_hun.ih_idseq.icd_seq = htons(mgr->seq);
-	icmp->icmp_cksum = checksum((u_int8_t *)echo + IPV4_HDRLEN,
-								ICMP_HDRLEN + echo->datalen);
+	icmp->icmp_cksum = update_checksum(echo);
 }
 
 static void				fill_ip_header(t_mgr *mgr, struct ip *ip, t_echo *echo)
@@ -55,6 +60,7 @@ int 					ping_loop(t_mgr *mgr, t_echo *echo, struct sockaddr_in *sin)
 		if (mgr->flags.count == TRUE)
 			mgr->count -= 1;
 		echo->icmp.icmp_hun.ih_idseq.icd_seq += 1;
+		echo->icmp.icmp_cksum = update_checksum(echo);
 	}
 	return (SUCCESS);
 }
