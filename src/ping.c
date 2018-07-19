@@ -83,7 +83,7 @@ int						ping(t_mgr *mgr)
 	struct sockaddr_in	sin;
 	t_echo				echo;
 
-	ft_strcpy(echo.data, "!\"#$%&'()*+,-./01234567");
+	ft_strcpy(echo.data, "                  !\"#$%&'()*+,-./01234567");
 	echo.datalen = (u_short)ft_strlen(echo.data);
 	init_ip_header(mgr, &echo.ip, &echo);
 	init_icmp_header_request(mgr, &echo.icmp);
