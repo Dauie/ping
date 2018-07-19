@@ -97,14 +97,16 @@ static int		parse_arguments(t_mgr *mgr, int ac, char **av)
 
 int				main(int ac, char **av)
 {
-	t_mgr		mgr;
+	t_mgr		*mgr;
 
 	if (ac == 1)
 		useage();
-	init_mgr(&mgr);
-	get_source(&mgr);
-	parse_arguments(&mgr, ac, av);
-	create_socket(&mgr);
-	ping(&mgr);
+	if (!(mgr = ft_memalloc(sizeof(t_mgr))))
+		return (FAILURE);
+	init_mgr(mgr);
+	get_source(mgr);
+	parse_arguments(mgr, ac, av);
+	create_socket(mgr);
+	ping(mgr);
 	return (SUCCESS);
 }

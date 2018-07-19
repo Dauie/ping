@@ -55,55 +55,60 @@ typedef enum	e_msg_types
 	TYPE_TSTMP_RPLY = 14,
 	TYPE_INFO_REQ = 15,
 	TYPE_INFO_RPLY = 16
-
 }				t_msg_types;
 
-typedef struct		s_echo
+typedef struct			s_echo
 {
-	struct ip		ip;
-	struct icmp		icmp;
-	struct timeval  time;
-	char			data[256];
-	u_short			datalen;
-}					t_echo;
+	struct ip			ip;
+	struct icmp			icmp;
+	struct timeval		time;
+	char				data[256];
+	u_short				datalen;
+}						t_echo;
 
-typedef struct		s_flags
+typedef struct			s_flags
 {
-	uint8_t			count: 1;
-	uint8_t			verbose: 1;
-}					t_flags;
+	uint8_t				count: 1;
+	uint8_t				verbose: 1;
+}						t_flags;
 
-typedef struct		s_stats
+typedef struct			s_stats
 {
-	float			avg;
-	float			max;
-	float			min;
-	size_t			recvd;
-	size_t			sent;
-}					t_stats;
+	float				avg;
+	float				max;
+	float				min;
+	size_t				recvd;
+	size_t				sent;
+}						t_stats;
 
-typedef struct		s_manager
+typedef struct			s_manager
 {
-	pid_t			pid;
-	uid_t			uid;
-	int				sock;
-	size_t			count;
-	size_t			seq;
-	char			domain[DOMAIN_NAME_LEN];
-	char			daddr[IPV4_ADDR_LEN];
-	char			saddr[IPV4_ADDR_LEN];
-	t_stats			stats;
-	t_flags			flags;
-}					t_mgr;
+	pid_t				pid;
+	uid_t				uid;
+	int					sock;
+	size_t				count;
+	size_t				seq;
+	struct sockaddr_in	sin;
+	t_echo				echo;
+	char				domain[DOMAIN_NAME_LEN];
+	char				daddr[IPV4_ADDR_LEN];
+	char				saddr[IPV4_ADDR_LEN];
+	t_stats				stats;
+	t_flags				flags;
+}						t_mgr;
 
-void				add_type(void *mem, int type);
-void				add_code(void *mem, int code);
-void				add_checksum(void *mem, int code);
-void				add_identifier(void *mem, pid_t pid);
-u_int16_t			checksum(void *data, size_t len);
-void				add_sequence(void *mem, unsigned short *seq);
-int					create_socket(t_mgr *mgr);
-void				init_mgr(t_mgr *mgr);
-int					ping(t_mgr *mgr);
+t_mgr					*g_mgr;
+
+void					add_type(void *mem, int type);
+void					add_code(void *mem, int code);
+void					add_checksum(void *mem, int code);
+void					add_identifier(void *mem, pid_t pid);
+u_int16_t				checksum(void *data, size_t len);
+void					add_sequence(void *mem, unsigned short *seq);
+int						create_socket(t_mgr *mgr);
+void					init_mgr(t_mgr *mgr);
+int						ping(t_mgr *mgr);
+int 					ping_loop(t_mgr *mgr, t_echo *echo, struct sockaddr_in *sin);
+void					alarm_handel_timeout(int sig);
 
 #endif

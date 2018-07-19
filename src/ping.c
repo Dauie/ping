@@ -77,6 +77,8 @@ int 					ping_loop(t_mgr *mgr, t_echo *echo, struct sockaddr_in *sin)
 	resp.msg_control = ctrlbuff;
 	resp.msg_controllen = (sizeof(struct cmsghdr) + IPV4_HDRLEN + ICMP_HDRLEN + sizeof(echo->time) + echo->datalen);
 	gettimeofday(&then, NULL);
+	signal(SIGALRM, alarm_handel_timeout);
+	alarm(2);
 	while (mgr->count)
 	{
 		gettimeofday(&now, NULL);
@@ -96,15 +98,15 @@ int 					ping_loop(t_mgr *mgr, t_echo *echo, struct sockaddr_in *sin)
 				mgr->count -= 1;
 			echo->icmp.icmp_hun.ih_idseq.icd_seq = ntohs(++mgr->seq);
 			gettimeofday(&then, NULL);
-		}
-		if ((rbyte = recvmsg(mgr->sock, &resp, MSG_PEEK)) > 0)
-		{
-			if ((rbyte = recvmsg(mgr->sock, &resp, 0)) < 0) {
-				dprintf(STDERR_FILENO, "Error recvmsg().%s\n", strerror(errno));
-				exit(FAILURE);
-			} else {
-				cmsg = (struct cmsghdr *) resp.msg_control;
-				(void) cmsg;
+			if ((rbyte = recvmsg(mgr->sock, &resp, MSG_PEEK)) > 0)
+			{
+				if ((rbyte = recvmsg(mgr->sock, &resp, 0)) < 0) {
+					dprintf(STDERR_FILENO, "Error recvmsg().%s\n", strerror(errno));
+					exit(FAILURE);
+				} else {
+					cmsg = (struct cmsghdr *) resp.msg_control;
+					(void) cmsg;
+				}
 			}
 		}
 	}
@@ -113,14 +115,11 @@ int 					ping_loop(t_mgr *mgr, t_echo *echo, struct sockaddr_in *sin)
 
 int						ping(t_mgr *mgr)
 {
-	struct sockaddr_in	sin;
-	t_echo				echo;
-
-	ft_strcpy(echo.data, "                !\"#$%&'()*+,-./01234567");
-	echo.datalen = (u_short)ft_strlen(echo.data);
-	init_ip_header(mgr, &echo.ip, &echo);
-	init_icmp_header_request(mgr, &echo.icmp);
-	prep_sockaddr(&sin, &echo);
-	ping_loop(mgr, &echo, &sin);
+	ft_strcpy(mgr->echo.data, "                !\"#$%&'()*+,-./01234567");
+	mgr->echo.datalen = (u_short)ft_strlen(mgr->echo.data);
+	init_ip_header(mgr, &mgr->echo.ip, &mgr->echo);
+	init_icmp_header_request(mgr, &mgr->echo.icmp);
+	prep_sockaddr(&mgr->sin, &mgr->echo);
+	ping_loop(mgr, &mgr->echo, &mgr->sin);
 	return (SUCCESS);
 }
