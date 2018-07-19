@@ -27,7 +27,7 @@ static void				init_ip_header(t_mgr *mgr, struct ip *ip, t_echo *echo)
 							echo->datalen);
 	ip->ip_id = htons(0);
 	ip->ip_off = htons(0);
-	ip->ip_ttl = (char)htons(64);
+	ip->ip_ttl = 64;
 	ip->ip_p = IPPROTO_ICMP;
 	if (inet_pton(AF_INET, mgr->saddr, &(ip->ip_src.s_addr)) <= 0)
 	{
