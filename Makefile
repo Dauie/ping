@@ -15,7 +15,7 @@ LIBFT = ./libft/libftprintf.a
 
 MAIN = main.c
 
-SRC = struct_init.c socket.c ping.c checksum.c
+SRC = struct_init.c socket.c ping.c checksum.c signal.c
 
 SRCFILES = $(addprefix $(SRCDIR)/, $(SRC))
 
