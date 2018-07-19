@@ -105,6 +105,7 @@ int 					ping_loop(t_mgr *mgr, t_echo *echo, struct sockaddr_in *sin)
 		else
 		{
 			cmsg = (struct cmsghdr *)resp.msg_control;
+			(void)cmsg;
 		}
 	}
 	return (SUCCESS);
