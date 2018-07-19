@@ -97,15 +97,15 @@ int 					ping_loop(t_mgr *mgr, t_echo *echo, struct sockaddr_in *sin)
 			echo->icmp.icmp_hun.ih_idseq.icd_seq = ntohs(++mgr->seq);
 			gettimeofday(&then, NULL);
 		}
-		if ((rbyte = recvmsg(mgr->sock, &resp, 0)) < 0)
+		if ((rbyte = recvmsg(mgr->sock, &resp, MSG_PEEK)) > 0)
 		{
-			dprintf(STDERR_FILENO, "Error recvmsg().%s\n", strerror(errno));
-			exit(FAILURE);
-		}
-		else
-		{
-			cmsg = (struct cmsghdr *)resp.msg_control;
-			(void)cmsg;
+			if ((rbyte = recvmsg(mgr->sock, &resp, 0)) < 0) {
+				dprintf(STDERR_FILENO, "Error recvmsg().%s\n", strerror(errno));
+				exit(FAILURE);
+			} else {
+				cmsg = (struct cmsghdr *) resp.msg_control;
+				(void) cmsg;
+			}
 		}
 	}
 	return (SUCCESS);
