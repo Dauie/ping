@@ -27,7 +27,7 @@ static void				init_ip_header(t_mgr *mgr, struct ip *ip, t_echo *echo)
 							echo->datalen);
 	ip->ip_id = htons(0);
 	ip->ip_off = htons(0);
-	ip->ip_ttl = 64;
+	ip->ip_ttl = (char)htons(64);
 	ip->ip_p = IPPROTO_ICMP;
 	if (inet_pton(AF_INET, mgr->saddr, &(ip->ip_src.s_addr)) <= 0)
 	{
@@ -66,6 +66,7 @@ int 					ping_loop(t_mgr *mgr, t_echo *echo, struct sockaddr_in *sin)
 
 	while (mgr->count)
 	{
+		ft_memset(packet, 0, IP_MAXPACKET);
 		fill_packet(packet, echo);
 		if (sendto(mgr->sock, packet, IPV4_HDRLEN + ICMP_HDRLEN +
 				sizeof(echo->time) + echo->datalen, 0,
@@ -76,7 +77,7 @@ int 					ping_loop(t_mgr *mgr, t_echo *echo, struct sockaddr_in *sin)
 		}
 		if (mgr->flags.count == TRUE)
 			mgr->count -= 1;
-		echo->icmp.icmp_hun.ih_idseq.icd_seq += 1;
+		echo->icmp.icmp_hun.ih_idseq.icd_seq = htons(echo->icmp.icmp_hun.ih_idseq.icd_seq + 1);
 	}
 	return (SUCCESS);
 }
