@@ -7,7 +7,6 @@ void		init_mgr(t_mgr *mgr)
 		dprintf(STDERR_FILENO, "Error getpid()\n");
 		exit(FAILURE);
 	}
-	mgr->seq = 1;
 	mgr->uid = getuid();
 	mgr->sock = 0;
 	mgr->count = 1;

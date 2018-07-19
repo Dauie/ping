@@ -5,6 +5,7 @@
 #define ICMP_HDRLEN 8         // ICMP header length for echo request, excludes data
 # define IP_MAXPACKET 65535
 # define IPV4_ADDR_LEN sizeof(struct sockaddr_in)
+# define TVUSEC_SZ sizeof(struct timeval.tv_usec)
 # define DOMAIN_NAME_LEN 253
 
 #include <errno.h>
@@ -35,6 +36,11 @@
 * -h Show help.
 **/
 
+//typedef enum	e_offsets
+//{
+//
+//}				e_off;
+
 typedef enum	e_msg_types
 {
 	TYPE_ECHO_RPLY = 0,
@@ -55,6 +61,7 @@ typedef struct		s_echo
 {
 	struct ip		ip;
 	struct icmp		icmp;
+	struct timeval  time;
 	char			data[256];
 	u_short			datalen;
 }					t_echo;
@@ -79,7 +86,6 @@ typedef struct		s_manager
 	pid_t			pid;
 	uid_t			uid;
 	int				sock;
-	unsigned short	seq;
 	size_t			count;
 	char			domain[DOMAIN_NAME_LEN];
 	char			daddr[IPV4_ADDR_LEN];
