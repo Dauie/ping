@@ -16,7 +16,7 @@ u_int16_t checksum(void *data, size_t len)
 			accum -= 0xffff;
 		i += 2;
 	}
-	if (len == 1)
+	if (len & 1)
 	{
 		word = 0;
 		ft_memcpy(&word, (uint8_t *)data + len - 1, 1);
