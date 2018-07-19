@@ -95,7 +95,7 @@ int 					ping_loop(t_mgr *mgr, t_echo *echo, struct sockaddr_in *sin)
 				mgr->count -= 1;
 			echo->icmp.icmp_hun.ih_idseq.icd_seq = ntohs(++mgr->seq);
 			gettimeofday(&then, NULL);
-			if ((rbyte = recvmsg(mgr->sock, &resp, 0)) < 0) {
+			if ((rbyte = recvmsg(mgr->sock, &resp, MSG_DONTWAIT)) < 0) {
 				dprintf(STDERR_FILENO, "Error recvmsg().%s\n", strerror(errno));
 				exit(FAILURE);
 			} else {
