@@ -93,7 +93,7 @@ int 					ping_loop(t_mgr *mgr, t_echo *echo, struct sockaddr_in *sin)
 				dprintf(STDERR_FILENO, "Error sendto(). %s\n", strerror(errno));
 				exit(FAILURE);
 			}
-			alarm(2);
+			alarm(3);
 			if (mgr->flags.count == TRUE)
 				mgr->count -= 1;
 			echo->icmp.icmp_hun.ih_idseq.icd_seq = ntohs(++mgr->seq);
@@ -104,6 +104,7 @@ int 					ping_loop(t_mgr *mgr, t_echo *echo, struct sockaddr_in *sin)
 					dprintf(STDERR_FILENO, "Error recvmsg().%s\n", strerror(errno));
 					exit(FAILURE);
 				} else {
+					alarm(0);
 					cmsg = (struct cmsghdr *) resp.msg_control;
 					(void) cmsg;
 				}
