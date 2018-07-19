@@ -43,7 +43,6 @@ static void		get_destination(t_mgr *mgr, char *dst)
 	struct addrinfo hints;
 	struct addrinfo *infoptr;
 
-	mgr->count = 0;
 	ft_memset(&hints, 0, sizeof(hints));
 	hints.ai_family = AF_INET;
 	ft_memcpy(mgr->domain, dst, ft_strlen(dst));
@@ -100,9 +99,9 @@ int				main(int ac, char **av)
 {
 	t_mgr		mgr;
 
-	init_mgr(&mgr);
 	if (ac == 1)
 		useage();
+	init_mgr(&mgr);
 	get_source(&mgr);
 	parse_arguments(&mgr, ac, av);
 	create_socket(&mgr);
