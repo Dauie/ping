@@ -66,7 +66,7 @@ int 					ping_loop(t_mgr *mgr, t_echo *echo, struct sockaddr_in *sin)
 	while (mgr->count)
 	{
 		gettimeofday(&now, NULL);
-		if (now.tv_sec - then.tv_sec > 3)
+		if (now.tv_sec - then.tv_sec > 1)
 		{
 			ft_memset(packet, 0, IP_MAXPACKET);
 			fill_packet(packet, echo);
