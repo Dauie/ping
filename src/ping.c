@@ -3,7 +3,7 @@
 static u_int16_t 		update_checksum(t_echo *echo, u_int8_t *packet)
 {
 	return (checksum(packet + IPV4_HDRLEN,
-			ICMP_HDRLEN + sizeof(echo->time.tv_usec) + echo->datalen));
+			ICMP_HDRLEN + sizeof(echo->time) + echo->datalen));
 }
 
 static void				init_icmp_header_request(t_mgr *mgr, struct icmp *icmp)
@@ -23,7 +23,7 @@ static void				init_ip_header(t_mgr *mgr, struct ip *ip, t_echo *echo)
 	ip->ip_hl = IPV4_HDRLEN / sizeof(uint32_t);
 	ip->ip_v = 4;
 	ip->ip_tos = 0;
-	ip->ip_len = htons(IPV4_HDRLEN + ICMP_HDRLEN + sizeof(echo->time.tv_usec) +
+	ip->ip_len = htons(IPV4_HDRLEN + ICMP_HDRLEN + sizeof(echo->time) +
 							echo->datalen);
 	ip->ip_id = htons(0);
 	ip->ip_off = htons(0);
