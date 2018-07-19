@@ -61,12 +61,27 @@ int 					ping_loop(t_mgr *mgr, t_echo *echo, struct sockaddr_in *sin)
 	struct timeval	then;
 	struct timeval	now;
 	u_int8_t		packet[IP_MAXPACKET];
+	struct msghdr	resp;
+	struct cmsghdr	*cmsg;
+	struct iovec	iov;
+	u_int8_t 		buff[128];
+	u_int8_t		ctrlbuff[256];
+	ssize_t 		rbyte;
 
+	iov.iov_base = buff;
+	iov.iov_len = 128;
+	resp.msg_name = NULL;
+	resp.msg_namelen = sizeof(struct sockaddr);
+	resp.msg_iov = &iov;
+	resp.msg_iovlen = 1;
+	resp.msg_control = ctrlbuff;
+	resp.msg_controllen = (sizeof(struct cmsghdr) + IPV4_HDRLEN + ICMP_HDRLEN + sizeof(echo->time) + echo->datalen);
 	gettimeofday(&then, NULL);
 	while (mgr->count)
 	{
 		gettimeofday(&now, NULL);
-		if ((now.tv_sec + (1.0 / 1000000) * now.tv_usec) - (then.tv_sec + (1.0 / 1000000) * then.tv_usec) > 1.0)
+		if ((now.tv_sec + (1.0 / 1000000) * now.tv_usec) -
+			(then.tv_sec + (1.0 / 1000000) * then.tv_usec) > 1.0)
 		{
 			ft_memset(packet, 0, IP_MAXPACKET);
 			fill_packet(packet, echo);
@@ -81,6 +96,15 @@ int 					ping_loop(t_mgr *mgr, t_echo *echo, struct sockaddr_in *sin)
 				mgr->count -= 1;
 			echo->icmp.icmp_hun.ih_idseq.icd_seq = ntohs(++mgr->seq);
 			gettimeofday(&then, NULL);
+		}
+		if ((rbyte = recvmsg(mgr->sock, &resp, 0)) < 0)
+		{
+			dprintf(STDERR_FILENO, "Error recvmsg().%s\n", strerror(errno));
+			exit(FAILURE);
+		}
+		else
+		{
+			cmsg = (struct cmsghdr *)resp.msg_control;
 		}
 	}
 	return (SUCCESS);
