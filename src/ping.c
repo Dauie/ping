@@ -2,7 +2,6 @@
 
 static u_int16_t 		update_checksum(t_echo *echo, u_int8_t *packet)
 {
-	echo->icmp.icmp_cksum = 0;
 	return (checksum(packet + IPV4_HDRLEN,
 			ICMP_HDRLEN + sizeof(echo->time.tv_usec) + echo->datalen));
 }
@@ -51,12 +50,12 @@ void					prep_sockaddr(struct sockaddr_in *sin, t_echo *echo)
 
 void 					fill_packet(u_int8_t *packet, t_echo *echo)
 {
-
+	echo->icmp.icmp_cksum = 0;
 	ft_memcpy(packet, &echo->ip, IPV4_HDRLEN);
-	ft_memcpy(packet + IPV4_HDRLEN, &echo->icmp, ICMP_HDRLEN);
+	ft_memcpy((packet + IPV4_HDRLEN), &echo->icmp, ICMP_HDRLEN);
 	gettimeofday(&echo->time, NULL);
-	ft_memcpy(packet + IPV4_HDRLEN + ICMP_HDRLEN, &echo->time.tv_usec, sizeof(echo->time.tv_usec));
-	ft_memcpy(packet + IPV4_HDRLEN + ICMP_HDRLEN + sizeof(echo->time.tv_usec), echo->data, echo->datalen);
+	ft_memcpy((packet + IPV4_HDRLEN + ICMP_HDRLEN), &echo->time, sizeof(echo->time));
+	ft_memcpy((packet + IPV4_HDRLEN + ICMP_HDRLEN + sizeof(echo->time)), echo->data, echo->datalen);
 	echo->icmp.icmp_cksum = update_checksum(echo, packet);
 	ft_memcpy(packet + IPV4_HDRLEN, &echo->icmp, ICMP_HDRLEN);
 }
@@ -69,7 +68,7 @@ int 					ping_loop(t_mgr *mgr, t_echo *echo, struct sockaddr_in *sin)
 	{
 		fill_packet(packet, echo);
 		if (sendto(mgr->sock, packet, IPV4_HDRLEN + ICMP_HDRLEN +
-				sizeof(echo->time.tv_usec) + echo->datalen, 0,
+				sizeof(echo->time) + echo->datalen, 0,
 					(struct sockaddr *)sin, sizeof(struct sockaddr)) < 0)
 		{
 			dprintf(STDERR_FILENO, "Error sendto(). %s\n", strerror(errno));

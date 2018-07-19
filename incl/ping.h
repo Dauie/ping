@@ -5,7 +5,6 @@
 #define ICMP_HDRLEN 8         // ICMP header length for echo request, excludes data
 # define IP_MAXPACKET 65535
 # define IPV4_ADDR_LEN sizeof(struct sockaddr_in)
-# define TVUSEC_SZ sizeof(struct timeval.tv_usec)
 # define DOMAIN_NAME_LEN 253
 
 #include <errno.h>
