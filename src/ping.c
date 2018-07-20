@@ -78,7 +78,6 @@ int 					ping_loop(t_mgr *mgr, t_echo *echo, struct sockaddr_in *sin)
 	printf("Entered Ping\n");
 	while (mgr->count)
 	{
-		printf("Loop\n");
 		gettimeofday(&now, NULL);
 		if ((now.tv_sec + (1.0 / 1000000) * now.tv_usec) -
 			(then.tv_sec + (1.0 / 1000000) * then.tv_usec) > 1.0)
