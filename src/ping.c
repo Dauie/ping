@@ -67,14 +67,14 @@ int 					ping_loop(t_mgr *mgr, t_echo *echo, struct sockaddr_in *sin)
 	struct cmsghdr	*cmsg;
 	struct iovec	iov;
 	u_int8_t		addrbuff[256];
-	u_int8_t 		resp_data[4096];
+	u_int8_t 		resp_data[256];
 	ssize_t 		rbyte;
 
-	iov.iov_base = &packet;
-	iov.iov_len = IP_MAXPACKET;
+	iov.iov_base = &resp_data;
+	iov.iov_len = 256;
 	ft_memset(&resp, 0, sizeof(struct msghdr));
 	resp.msg_name = &addrbuff;
-	resp.msg_namelen = sizeof(addrbuff);
+	resp.msg_namelen = 256;
 	resp.msg_iov = &iov;
 	resp.msg_iovlen = 1;
 	resp.msg_control = &resp_data;
