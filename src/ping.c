@@ -102,7 +102,7 @@ struct msghdr		*init_msghdr()
 	return (resp);
 }
 
-int 				handel_response(struct msghdr *resp, struct timeval *now)
+int 				handel_response(struct msghdr *resp, struct timeval *now, ssize_t rbyte)
 {
 	struct icmp		*icmp;
 	struct timeval	*then;
@@ -124,7 +124,7 @@ int 				handel_response(struct msghdr *resp, struct timeval *now)
 		inet_ntop(AF_INET, src, addr, IPV4_ADDR_LEN);
 
 		printf("%zu bytes from %s: icmp_seq=%u ttl=%i time=%f ms\n",
-			   (size_t)resp->msg_controllen, addr, seq, (int)ttl, timediff);
+			   rbyte, addr, seq, (int)ttl, timediff);
 	}
 	return (SUCCESS);
 }
@@ -151,7 +151,7 @@ void				recv_ping(t_mgr *mgr, struct timeval *now)
 		}
 	}
 	else
-		handel_response(resp, now);
+		handel_response(resp, now, rbyte);
 }
 
 int 					ping_loop(t_mgr *mgr, t_echo *echo)
