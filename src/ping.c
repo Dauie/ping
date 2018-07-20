@@ -122,8 +122,8 @@ int 					ping_loop(t_mgr *mgr, t_echo *echo, struct sockaddr_in *sin)
 			{
 				char *address = (char *)resp_data; //your address
 
-				for(int i=0;i < rbyte; i++)
-					printf("%d\n",*address++);
+//				for(int i=0;i < rbyte; i++)
+//					printf("%d\n",*address++);
 				cmsg = (struct cmsghdr *)&resp;
 				struct icmp *eye = (struct icmp *)(resp_data + rbyte) - (sizeof(echo->time) + echo->datalen + ICMP_HDRLEN) ;
 				struct timeval *resptime = (struct timeval *)((u_int8_t*)resp_data + IPV4_HDRLEN + ICMP_HDRLEN);
