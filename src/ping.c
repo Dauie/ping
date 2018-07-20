@@ -123,7 +123,7 @@ int 				handel_response(struct msghdr *resp, struct timeval *now)
 		src = &((struct ip *)resp)->ip_src;
 		inet_ntop(AF_INET, src, addr, IPV4_ADDR_LEN);
 
-		printf("%zu bytes from %s: icmp_seq=%zu ttl=%i time=%f ms\n",
+		printf("%zu bytes from %s: icmp_seq=%u ttl=%i time=%f ms\n",
 			   (size_t)resp->msg_controllen, addr, seq, (int)ttl, timediff);
 	}
 	return (SUCCESS);
