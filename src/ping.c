@@ -75,12 +75,15 @@ int 					ping_loop(t_mgr *mgr, t_echo *echo, struct sockaddr_in *sin)
 		IPV4_HDRLEN + ICMP_HDRLEN + sizeof(echo->time) + echo->datalen);
 	gettimeofday(&then, NULL);
 	signal(SIGALRM, alarm_handel_timeout);
+	printf("Entered Ping\n");
 	while (mgr->count)
 	{
+		printf("Loop\n");
 		gettimeofday(&now, NULL);
 		if ((now.tv_sec + (1.0 / 1000000) * now.tv_usec) -
 			(then.tv_sec + (1.0 / 1000000) * then.tv_usec) > 1.0)
 		{
+			printf("Sending Message\n");
 			ft_memset(packet, 0, IP_MAXPACKET);
 			fill_packet(packet, echo);
 			if (sendto(mgr->sock, packet, (IPV4_HDRLEN + ICMP_HDRLEN +
@@ -95,7 +98,7 @@ int 					ping_loop(t_mgr *mgr, t_echo *echo, struct sockaddr_in *sin)
 				mgr->count -= 1;
 			echo->icmp.icmp_hun.ih_idseq.icd_seq = ntohs(++mgr->seq);
 			gettimeofday(&then, NULL);
-			if ((rbyte = recvmsg(mgr->sock, &resp, MSG_DONTWAIT)) < 0) {
+			if ((rbyte = recvmsg(mgr->sock, &resp, 0)) < 0) {
 				dprintf(STDERR_FILENO, "Error recvmsg().%s\n", strerror(errno));
 				exit(FAILURE);
 			} else {
