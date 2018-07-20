@@ -122,8 +122,8 @@ int 					ping_loop(t_mgr *mgr, t_echo *echo, struct sockaddr_in *sin)
 			{
 				printf("%zu\n", rbyte);
 				struct ip *ip = (struct ip *)&resp_data;
-				struct icmp *icmp = (struct icmp *)&resp_data + IPV4_HDRLEN;
-				struct timeval *tim = (struct timeval *)&resp_data + IPV4_HDRLEN + ICMP_HDRLEN;
+				struct icmp *icmp = (struct icmp *)&resp_data[IPV4_HDRLEN];
+				struct timeval *tim = (struct timeval *)&resp_data[IPV4_HDRLEN + ICMP_HDRLEN];
 				(void)ip;
 				(void)icmp;
 				(void)tim;
