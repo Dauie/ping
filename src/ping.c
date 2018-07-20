@@ -106,9 +106,10 @@ int 				handel_response(struct msghdr *resp, struct timeval *now)
 {
 	struct icmp		*icmp;
 	struct timeval	*then;
+	struct in_addr	*src;
 	double			timediff;
 	char 			addr[IPV4_ADDR_LEN];
-	size_t			seq;
+	u_short			seq;
 	char 			ttl;
 
 	icmp = (struct icmp *)&((u_int8_t *)resp->msg_control)[IPV4_HDRLEN];
@@ -117,9 +118,10 @@ int 				handel_response(struct msghdr *resp, struct timeval *now)
 	{
 		timediff = (now->tv_sec + (1.0 / 1000000) * now->tv_usec) -
 				   (then->tv_sec + (1.0 / 1000000) * then->tv_usec);
-		seq = ((struct icmp *)&((u_int8_t *)resp->msg_control)[IPV4_HDRLEN])->icmp_hun.ih_idseq.icd_seq;
+		seq = (u_short)((struct icmp *)&((u_int8_t *)resp->msg_control)[IPV4_HDRLEN])->icmp_hun.ih_idseq.icd_seq;
 		ttl = ((struct ip *)resp->msg_control)->ip_ttl;
-		inet_ntop(AF_INET, (struct sockaddr_in*)&resp->msg_name, addr, IPV4_ADDR_LEN);
+		src = &((struct ip *)resp)->ip_src;
+		inet_ntop(AF_INET, src, addr, IPV4_ADDR_LEN);
 
 		printf("%zu bytes from %s: icmp_seq=%zu ttl=%i time=%f ms\n",
 			   (size_t)resp->msg_controllen, addr, seq, (int)ttl, timediff);
