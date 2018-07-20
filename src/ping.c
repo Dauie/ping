@@ -1,3 +1,4 @@
+#include <netinet/ip_icmp.h>
 #include "../incl/ping.h"
 
 
@@ -58,27 +59,104 @@ void 					fill_packet(u_int8_t *packet, t_echo *echo)
 	ft_memcpy(packet + IPV4_HDRLEN, &echo->icmp, ICMP_HDRLEN);
 }
 
+int 					send_ping(t_mgr *mgr, t_echo *echo)
+{
+	u_int8_t		packet[IP_MAXPACKET];
+
+	ft_memset(packet, 0, IP_MAXPACKET);
+	fill_packet(packet, echo);
+	if (sendto(mgr->sock, packet, (IPV4_HDRLEN + ICMP_HDRLEN +
+								   sizeof(echo->time) + echo->datalen), 0,
+			   (struct sockaddr *)&mgr->sin, sizeof(struct sockaddr)) < 0)
+	{
+		dprintf(STDERR_FILENO, "Error sendto(). %s\n", strerror(errno));
+		exit(FAILURE);
+	}
+	printf("Sent\n");
+	return (SUCCESS);
+}
+
+struct msghdr		*init_msghdr()
+{
+	struct iovec	*iov;
+	struct msghdr	*resp;
+	u_int8_t		*addrbuff;
+	u_int8_t		*resp_data;
+
+	if (!(resp = ft_memalloc(sizeof(struct msghdr))))
+		return (NULL);
+	if (!(addrbuff = ft_memalloc(sizeof(IPV4_ADDR_LEN))))
+		return (NULL);
+	if (!(resp_data = ft_memalloc(256)))
+		return (NULL);
+	if (!(iov = ft_memalloc(sizeof(struct iovec))))
+		return (NULL);
+	iov->iov_base = resp_data;
+	iov->iov_len = 256;
+	ft_memset(resp, 0, sizeof(struct msghdr));
+	resp->msg_name = addrbuff;
+	resp->msg_namelen = IPV4_ADDR_LEN;
+	resp->msg_iov = iov;
+	resp->msg_iovlen = 1;
+	resp->msg_control = resp_data;
+	resp->msg_controllen = sizeof(resp_data);
+	return (resp);
+}
+
+int 				handel_response(struct msghdr *resp, struct timeval *now)
+{
+	struct icmp		*icmp;
+	struct timeval	*then;
+	double			timediff;
+	char 			addr[IPV4_ADDR_LEN];
+	size_t			seq;
+	char 			ttl;
+
+	icmp = (struct icmp *)&resp->msg_control[IPV4_HDRLEN];
+	then = (struct timeval *)&resp->msg_control[IPV4_HDRLEN + ICMP_HDRLEN];
+	if (icmp->icmp_type == TYPE_ECHO_RPLY)
+	{
+		timediff = (now->tv_sec + (1.0 / 1000000) * now->tv_usec) -
+				   (then->tv_sec + (1.0 / 1000000) * then->tv_usec);
+		seq = ((struct icmp *)&resp->msg_control[IPV4_HDRLEN])->icmp_hun.ih_idseq.icd_seq;
+		ttl = ((struct ip *)resp->msg_control)->ip_ttl;
+		inet_ntop(AF_INET, &(struct sockaddr_in*)resp->msg_name, addr, IPV4_ADDR_LEN);
+
+		printf("%zu bytes from %s: icmp_seq=%zu ttl=%i time=%f ms\n",
+			   (size_t)resp->msg_controllen, addr, seq, (int)ttl, timediff);
+	}
+	return (SUCCESS);
+}
+
+void				recv_ping(t_mgr *mgr, struct timeval *now)
+{
+	struct msghdr	*resp;
+	ssize_t 		rbyte;
+
+	resp = init_msghdr();
+	if ((rbyte = recvmsg(mgr->sock, resp, MSG_DONTWAIT)) < 0)
+	{
+		if (errno == EAGAIN)
+			return ;
+		dprintf(STDERR_FILENO, "Error recvmsg().%s\n", strerror(errno));
+		exit(FAILURE);
+	}
+	else if (rbyte == 0)
+	{
+		if (g_toflg == TRUE)
+		{
+			printf("Request timeout for icmp_seq %zu\n", mgr->seq - 1);
+			g_toflg = FALSE;
+		}
+	}
+	else
+		handel_response(resp, now);
+}
+
 int 					ping_loop(t_mgr *mgr, t_echo *echo, struct sockaddr_in *sin)
 {
 	struct timeval	then;
 	struct timeval	now;
-	u_int8_t		packet[IP_MAXPACKET];
-	struct msghdr	resp;
-	struct cmsghdr	*cmsg;
-	struct iovec	iov;
-	u_int8_t		addrbuff[256];
-	u_int8_t 		resp_data[256];
-	ssize_t 		rbyte;
-
-	iov.iov_base = &resp_data;
-	iov.iov_len = 256;
-	ft_memset(&resp, 0, sizeof(struct msghdr));
-	resp.msg_name = &addrbuff;
-	resp.msg_namelen = 256;
-	resp.msg_iov = &iov;
-	resp.msg_iovlen = 1;
-	resp.msg_control = &resp_data;
-	resp.msg_controllen = sizeof(resp_data);
 
 	gettimeofday(&then, NULL);
 	//signal(SIGALRM, alarm_handel_timeout);
@@ -90,44 +168,14 @@ int 					ping_loop(t_mgr *mgr, t_echo *echo, struct sockaddr_in *sin)
 			(then.tv_sec + (1.0 / 1000000) * then.tv_usec) > 1.0)
 		{
 			printf("Sending Message\n");
-			ft_memset(packet, 0, IP_MAXPACKET);
-			fill_packet(packet, echo);
-			if (sendto(mgr->sock, packet, (IPV4_HDRLEN + ICMP_HDRLEN +
-				sizeof(echo->time) + echo->datalen), 0,
-					(struct sockaddr *)sin, sizeof(struct sockaddr)) < 0)
-			{
-				dprintf(STDERR_FILENO, "Error sendto(). %s\n", strerror(errno));
-				exit(FAILURE);
-			}
-			printf("Sent\n");
+			send_ping(mgr, echo);
 			//alarm(1);
 			if (mgr->flags.count == TRUE)
 				mgr->count -= 1;
 			echo->icmp.icmp_hun.ih_idseq.icd_seq = ntohs(++mgr->seq);
 			gettimeofday(&then, NULL);
 			printf("At recvmsg\n");
-			if ((rbyte = recvmsg(mgr->sock, &resp, MSG_DONTWAIT)) < 0) {
-				if (errno == EAGAIN)
-					continue;
-				dprintf(STDERR_FILENO, "Error recvmsg().%s\n", strerror(errno));
-				exit(FAILURE);
-			} else if (rbyte == 0)
-			{
-				if (g_toflg == TRUE)
-				{
-					printf("Request timeout for icmp_seq %zu\n", mgr->seq - 1);
-					g_toflg = FALSE;
-				}
-			} else
-			{
-				printf("%zu\n", rbyte);
-				struct ip *ip = (struct ip *)&resp_data;
-				struct icmp *icmp = (struct icmp *)&resp_data[IPV4_HDRLEN];
-				struct timeval *tim = (struct timeval *)&resp_data[IPV4_HDRLEN + ICMP_HDRLEN];
-				(void)ip;
-				(void)icmp;
-				(void)tim;
-			}
+			recv_ping(mgr, &now);
 		}
 	}
 	return (SUCCESS);
