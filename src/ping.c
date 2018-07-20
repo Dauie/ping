@@ -111,8 +111,8 @@ int 				handel_response(struct msghdr *resp, struct timeval *now)
 	size_t			seq;
 	char 			ttl;
 
-	icmp = (struct icmp *)&resp->msg_control[IPV4_HDRLEN];
-	then = (struct timeval *)&resp->msg_control[IPV4_HDRLEN + ICMP_HDRLEN];
+	icmp = (struct icmp *)&((u_int8_t *)resp->msg_control)[IPV4_HDRLEN];
+	then = (struct timeval *)&((u_int8_t *)resp->msg_control)[IPV4_HDRLEN + ICMP_HDRLEN];
 	if (icmp->icmp_type == TYPE_ECHO_RPLY)
 	{
 		timediff = (now->tv_sec + (1.0 / 1000000) * now->tv_usec) -
