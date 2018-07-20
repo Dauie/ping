@@ -102,6 +102,8 @@ int 					ping_loop(t_mgr *mgr, t_echo *echo, struct sockaddr_in *sin)
 			gettimeofday(&then, NULL);
 			printf("At recvmsg\n");
 			if ((rbyte = recvmsg(mgr->sock, &resp, 0)) < 0) {
+				if (errno == EAGAIN)
+					continue;
 				dprintf(STDERR_FILENO, "Error recvmsg().%s\n", strerror(errno));
 				exit(FAILURE);
 			} else if (rbyte == 0)
