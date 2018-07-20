@@ -70,17 +70,18 @@ int 					ping_loop(t_mgr *mgr, t_echo *echo, struct sockaddr_in *sin)
 	u_int8_t 		resp_data[4096];
 	ssize_t 		rbyte;
 
-	iov.iov_base = packet;
+	iov.iov_base = &packet;
 	iov.iov_len = IP_MAXPACKET;
-	resp.msg_name = addrbuff;
+	ft_memset(&resp, 0, sizeof(struct msghdr));
+	resp.msg_name = &addrbuff;
 	resp.msg_namelen = sizeof(addrbuff);
 	resp.msg_iov = &iov;
 	resp.msg_iovlen = 1;
-	resp.msg_control = resp_data;
+	resp.msg_control = &resp_data;
 	resp.msg_controllen = sizeof(resp_data);
 
 	gettimeofday(&then, NULL);
-	signal(SIGALRM, alarm_handel_timeout);
+	//signal(SIGALRM, alarm_handel_timeout);
 	printf("Entered Ping\n");
 	while (mgr->count)
 	{
@@ -99,7 +100,7 @@ int 					ping_loop(t_mgr *mgr, t_echo *echo, struct sockaddr_in *sin)
 				exit(FAILURE);
 			}
 			printf("Sent\n");
-			alarm(1);
+			//alarm(1);
 			if (mgr->flags.count == TRUE)
 				mgr->count -= 1;
 			echo->icmp.icmp_hun.ih_idseq.icd_seq = ntohs(++mgr->seq);
@@ -120,7 +121,7 @@ int 					ping_loop(t_mgr *mgr, t_echo *echo, struct sockaddr_in *sin)
 			} else
 			{
 				printf("Recieved something! %zu\n", rbyte);
-				alarm(0);
+				//alarm(0);
 				cmsg = (struct cmsghdr *) resp.msg_control;
 				(void) cmsg;
 			}
