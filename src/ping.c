@@ -123,17 +123,19 @@ int 					ping_loop(t_mgr *mgr, t_echo *echo, struct sockaddr_in *sin)
 				// Print packet.
 				char *address = (char *)resp_data;
 				int i;
+				u_short word;
 				for(i = 0 ; i + 1 < rbyte; i += 2)
 				{
-					printf("%hu", (u_short)address[i]);
+					ft_memcpy(&word, (u_short*)&address[i], 2);
+					printf("%02X", (u_short)address[i]);
 					if (i % 16 == 0)
 						write(1, "\n", 1);
 				}
 				if (i & 1)
 				{
-					short word = 0;
+					  word = 0;
 					ft_memcpy(&word, (uint8_t *)address + i - 1, 1);
-					printf("%hu", word);
+					printf("%02X", word);
 				}
 
 				cmsg = (struct cmsghdr *)&resp;
