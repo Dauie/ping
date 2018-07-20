@@ -13,7 +13,7 @@ int		setopt(t_mgr *mgr)
 		dprintf(STDERR_FILENO, "Error setsockopt()\n");
 		exit(FAILURE);
 	}
-	if (setsockopt(mgr->sock, IPPROTO_IP, SO_RCVTIMEO, &tout, sizeof(tout)) < 0)
+	if (setsockopt(mgr->sock, IPPROTO_ICMP, SO_RCVTIMEO, (char *)&tout, sizeof(struct timeval)) < 0)
 	{
 		dprintf(STDERR_FILENO, "Error setsockopt()\n");
 		exit(FAILURE);
