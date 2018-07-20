@@ -4,9 +4,16 @@
 int		setopt(t_mgr *mgr)
 {
 	int on;
+	struct timeval tout;
 
 	on = 1;
+	tout.tv_sec = 1;
 	if (setsockopt(mgr->sock, IPPROTO_IP, IP_HDRINCL, &on, sizeof(on)) < 0)
+	{
+		dprintf(STDERR_FILENO, "Error setsockopt()\n");
+		exit(FAILURE);
+	}
+	if (setsockopt(mgr->sock, IPPROTO_IP, SO_RCVTIMEO, &tout, sizeof(tout)) < 0)
 	{
 		dprintf(STDERR_FILENO, "Error setsockopt()\n");
 		exit(FAILURE);
