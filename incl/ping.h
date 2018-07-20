@@ -98,7 +98,7 @@ typedef struct			s_manager
 	t_flags				flags;
 }						t_mgr;
 
-t_mgr					*g_mgr;
+volatile int			g_toflg;
 
 void					add_type(void *mem, int type);
 void					add_code(void *mem, int code);

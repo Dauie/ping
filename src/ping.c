@@ -1,5 +1,7 @@
 #include "../incl/ping.h"
 
+
+
 static u_int16_t 		update_checksum(t_echo *echo, u_int8_t *packet)
 {
 	return (checksum((packet + IPV4_HDRLEN),
@@ -93,7 +95,7 @@ int 					ping_loop(t_mgr *mgr, t_echo *echo, struct sockaddr_in *sin)
 				exit(FAILURE);
 			}
 			printf("Sent\n");
-			alarm(3);
+			alarm(1);
 			if (mgr->flags.count == TRUE)
 				mgr->count -= 1;
 			echo->icmp.icmp_hun.ih_idseq.icd_seq = ntohs(++mgr->seq);
@@ -102,6 +104,13 @@ int 					ping_loop(t_mgr *mgr, t_echo *echo, struct sockaddr_in *sin)
 			if ((rbyte = recvmsg(mgr->sock, &resp, 0)) < 0) {
 				dprintf(STDERR_FILENO, "Error recvmsg().%s\n", strerror(errno));
 				exit(FAILURE);
+			} else if (rbyte == 0)
+			{
+				if (g_toflg == TRUE)
+				{
+					printf("Request timeout for icmp_seq %zu\n", mgr->seq - 1);
+					g_toflg = FALSE;
+				}
 			} else {
 				printf("Recieved something! %zu\n", rbyte);
 				alarm(0);
