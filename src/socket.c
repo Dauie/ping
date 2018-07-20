@@ -24,7 +24,7 @@ int		setopt(t_mgr *mgr)
 
 int		create_socket(t_mgr *mgr)
 {
-	if ((mgr->sock = socket(AF_INET, SOCK_RAW, IPPROTO_RAW)) < 0)
+	if ((mgr->sock = socket(AF_INET, SOCK_RAW, IPPROTO_ICMP)) < 0)
 	{
 		dprintf(STDERR_FILENO, "Error socket() - %s.\n", strerror(errno));
 		exit(FAILURE);
