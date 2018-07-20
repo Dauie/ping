@@ -120,7 +120,7 @@ int 				handel_response(struct msghdr *resp, struct timeval *now)
 				   (then->tv_sec + (1.0 / 1000000) * then->tv_usec);
 		seq = (u_short)((struct icmp *)&((u_int8_t *)resp->msg_control)[IPV4_HDRLEN])->icmp_hun.ih_idseq.icd_seq;
 		ttl = ((struct ip *)resp->msg_control)->ip_ttl;
-		src = &((struct ip *)resp)->ip_src;
+		src = &((struct ip *)resp->msg_control)->ip_src;
 		inet_ntop(AF_INET, src, addr, IPV4_ADDR_LEN);
 
 		printf("%zu bytes from %s: icmp_seq=%u ttl=%i time=%f ms\n",
