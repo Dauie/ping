@@ -93,11 +93,13 @@ int 					ping_loop(t_mgr *mgr, t_echo *echo, struct sockaddr_in *sin)
 				dprintf(STDERR_FILENO, "Error sendto(). %s\n", strerror(errno));
 				exit(FAILURE);
 			}
+			printf("Sent\n");
 			alarm(3);
 			if (mgr->flags.count == TRUE)
 				mgr->count -= 1;
 			echo->icmp.icmp_hun.ih_idseq.icd_seq = ntohs(++mgr->seq);
 			gettimeofday(&then, NULL);
+			printf("At recvmsg\n");
 			if ((rbyte = recvmsg(mgr->sock, &resp, 0)) < 0) {
 				dprintf(STDERR_FILENO, "Error recvmsg().%s\n", strerror(errno));
 				exit(FAILURE);
