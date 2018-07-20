@@ -120,12 +120,13 @@ int 					ping_loop(t_mgr *mgr, t_echo *echo, struct sockaddr_in *sin)
 				}
 			} else
 			{
-				cmsg = (struct cmsghdr *)&resp;
-				struct icmp *eye = (struct icmp *)(resp_data + rbyte) - 46 ;
-				struct timeval *resptime = (struct timeval *)((u_int8_t*)resp_data + IPV4_HDRLEN + ICMP_HDRLEN);
-				(void)eye;
-				(void)resptime;
-				(void) cmsg;
+				printf("%zu\n", rbyte);
+				struct ip *ip = (struct ip *)&resp_data;
+				struct icmp *icmp = (struct icmp *)&resp_data + IPV4_HDRLEN;
+				struct timeval *tim = (struct timeval *)&resp_data + IPV4_HDRLEN + ICMP_HDRLEN;
+				(void)ip;
+				(void)icmp;
+				(void)tim;
 			}
 		}
 	}
