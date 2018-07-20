@@ -122,8 +122,8 @@ int 					ping_loop(t_mgr *mgr, t_echo *echo, struct sockaddr_in *sin)
 			{
 				printf("Recieved something! %zu\n", rbyte);
 				//alarm(0);
-				struct icmp *eye = (struct icmp *)resp_data;
-				struct timeval *resptime = (struct timeval *)((u_int8_t*)resp_data + ICMP_HDRLEN);
+				struct icmp *eye = (struct icmp *)(resp_data + ICMP_HDRLEN);
+				struct timeval *resptime = (struct timeval *)((u_int8_t*)resp_data + IPV4_HDRLEN + ICMP_HDRLEN);
 				(void)eye;
 				(void)resptime;
 				(void) cmsg;
