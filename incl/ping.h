@@ -109,7 +109,7 @@ void					add_sequence(void *mem, unsigned short *seq);
 int						create_socket(t_mgr *mgr);
 void					init_mgr(t_mgr *mgr);
 int						ping(t_mgr *mgr);
-int 					ping_loop(t_mgr *mgr, t_echo *echo, struct sockaddr_in *sin);
+int 					ping_loop(t_mgr *mgr, t_echo *echo);
 void					alarm_handel_timeout(int sig);
 
 #endif

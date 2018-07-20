@@ -1,4 +1,3 @@
-#include <netinet/ip_icmp.h>
 #include "../incl/ping.h"
 
 
@@ -120,7 +119,7 @@ int 				handel_response(struct msghdr *resp, struct timeval *now)
 				   (then->tv_sec + (1.0 / 1000000) * then->tv_usec);
 		seq = ((struct icmp *)&((u_int8_t *)resp->msg_control)[IPV4_HDRLEN])->icmp_hun.ih_idseq.icd_seq;
 		ttl = ((struct ip *)resp->msg_control)->ip_ttl;
-		inet_ntop(AF_INET, &(struct sockaddr_in*)resp->msg_name, addr, IPV4_ADDR_LEN);
+		inet_ntop(AF_INET, (struct sockaddr_in*)&resp->msg_name, addr, IPV4_ADDR_LEN);
 
 		printf("%zu bytes from %s: icmp_seq=%zu ttl=%i time=%f ms\n",
 			   (size_t)resp->msg_controllen, addr, seq, (int)ttl, timediff);
@@ -153,7 +152,7 @@ void				recv_ping(t_mgr *mgr, struct timeval *now)
 		handel_response(resp, now);
 }
 
-int 					ping_loop(t_mgr *mgr, t_echo *echo, struct sockaddr_in *sin)
+int 					ping_loop(t_mgr *mgr, t_echo *echo)
 {
 	struct timeval	then;
 	struct timeval	now;
@@ -188,6 +187,6 @@ int						ping(t_mgr *mgr)
 	init_ip_header(mgr, &mgr->echo.ip, &mgr->echo);
 	init_icmp_header_request(mgr, &mgr->echo.icmp);
 	prep_sockaddr(&mgr->sin, &mgr->echo);
-	ping_loop(mgr, &mgr->echo, &mgr->sin);
+	ping_loop(mgr, &mgr->echo);
 	return (SUCCESS);
 }
