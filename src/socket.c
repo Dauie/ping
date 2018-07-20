@@ -7,14 +7,14 @@ int		setopt(t_mgr *mgr)
 	struct timeval tout;
 
 	on = 1;
-	ft_memset(&tout, 0, sizeof(struct timeval));
 	tout.tv_sec = 1;
+	tout.tv_usec = 0;
 	if (setsockopt(mgr->sock, IPPROTO_IP, IP_HDRINCL, &on, sizeof(on)) < 0)
 	{
 		dprintf(STDERR_FILENO, "Error setsockopt()\n");
 		exit(FAILURE);
 	}
-	if (setsockopt(mgr->sock, SOL_SOCKET, SO_RCVTIMEO, (void *)&tout, sizeof(struct timeval)) < 0)
+	if (setsockopt(mgr->sock, SOL_SOCKET, SO_RCVTIMEO, &tout, sizeof(struct timeval)) < 0)
 	{
 		dprintf(STDERR_FILENO, "Error setsockopt()\n");
 		exit(FAILURE);
