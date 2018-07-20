@@ -120,10 +120,22 @@ int 					ping_loop(t_mgr *mgr, t_echo *echo, struct sockaddr_in *sin)
 				}
 			} else
 			{
-				char *address = (char *)resp_data; //your address
+				// Print packet.
+				char *address = (char *)resp_data;
+				int i;
+				for(i = 0 ; i + 1 < rbyte; i += 2)
+				{
+					printf("%hu", (u_short)address[i]);
+					if (i % 16 == 0)
+						write(1, "\n", 1);
+				}
+				if (i & 1)
+				{
+					short word = 0;
+					ft_memcpy(&word, (uint8_t *)address + i - 1, 1);
+					printf("%hu", word);
+				}
 
-//				for(int i=0;i < rbyte; i++)
-//					printf("%d\n",*address++);
 				cmsg = (struct cmsghdr *)&resp;
 				struct icmp *eye = (struct icmp *)(resp_data + rbyte) - (sizeof(echo->time) + echo->datalen + ICMP_HDRLEN) ;
 				struct timeval *resptime = (struct timeval *)((u_int8_t*)resp_data + IPV4_HDRLEN + ICMP_HDRLEN);
