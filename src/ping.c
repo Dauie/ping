@@ -65,16 +65,20 @@ int 					ping_loop(t_mgr *mgr, t_echo *echo, struct sockaddr_in *sin)
 	u_int8_t		packet[IP_MAXPACKET];
 	struct msghdr	resp;
 	struct cmsghdr	*cmsg;
-	u_int8_t		ctrlbuff[256];
+	struct iovec	iov;
+	u_int8_t		addrbuff[256];
+	u_int8_t 		resp_data[4096];
 	ssize_t 		rbyte;
 
-	resp.msg_name = NULL;
-	resp.msg_namelen = sizeof(struct sockaddr);
-	resp.msg_iov = NULL;
-	resp.msg_iovlen = 0;
-	resp.msg_control = ctrlbuff;
-	resp.msg_controllen = (sizeof(struct cmsghdr) +
-		IPV4_HDRLEN + ICMP_HDRLEN + sizeof(echo->time) + echo->datalen);
+	iov.iov_base = packet;
+	iov.iov_len = IP_MAXPACKET;
+	resp.msg_name = addrbuff;
+	resp.msg_namelen = sizeof(addrbuff);
+	resp.msg_iov = &iov;
+	resp.msg_iovlen = 1;
+	resp.msg_control = resp_data;
+	resp.msg_controllen = sizeof(resp_data);
+
 	gettimeofday(&then, NULL);
 	signal(SIGALRM, alarm_handel_timeout);
 	printf("Entered Ping\n");
@@ -101,7 +105,7 @@ int 					ping_loop(t_mgr *mgr, t_echo *echo, struct sockaddr_in *sin)
 			echo->icmp.icmp_hun.ih_idseq.icd_seq = ntohs(++mgr->seq);
 			gettimeofday(&then, NULL);
 			printf("At recvmsg\n");
-			if ((rbyte = recvmsg(mgr->sock, &resp, 0)) < 0) {
+			if ((rbyte = recvmsg(mgr->sock, &resp, MSG_DONTWAIT)) < 0) {
 				if (errno == EAGAIN)
 					continue;
 				dprintf(STDERR_FILENO, "Error recvmsg().%s\n", strerror(errno));
@@ -113,7 +117,8 @@ int 					ping_loop(t_mgr *mgr, t_echo *echo, struct sockaddr_in *sin)
 					printf("Request timeout for icmp_seq %zu\n", mgr->seq - 1);
 					g_toflg = FALSE;
 				}
-			} else {
+			} else
+			{
 				printf("Recieved something! %zu\n", rbyte);
 				alarm(0);
 				cmsg = (struct cmsghdr *) resp.msg_control;
