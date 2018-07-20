@@ -121,8 +121,10 @@ int 					ping_loop(t_mgr *mgr, t_echo *echo, struct sockaddr_in *sin)
 			} else
 			{
 				printf("Recieved something! %zu\n", rbyte);
+
 				//alarm(0);
 				cmsg = (struct cmsghdr *) resp.msg_control;
+				printf("%s", resp_data);
 				(void) cmsg;
 			}
 		}
