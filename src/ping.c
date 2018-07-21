@@ -185,7 +185,9 @@ int						ping(t_mgr *mgr)
 	init_ip_header(mgr, &mgr->echo.ip, &mgr->echo);
 	init_icmp_header_request(mgr, &mgr->echo.icmp);
 	prep_sockaddr(&mgr->sin, &mgr->echo);
-	printf("PING %s (%s) %d(%d) bytes of data.\n", mgr->domain, mgr->daddr, mgr->echo.datalen, mgr->echo.datalen + IPV4_HDRLEN + ICMP_HDRLEN);
+	printf("PING %s (%s) %d(%zu) bytes of data.\n",
+		mgr->domain, mgr->daddr, mgr->echo.datalen,
+			IPV4_HDRLEN + ICMP_HDRLEN + mgr->echo.datalen + sizeof(struct timeval));
 	ping_loop(mgr, &mgr->echo);
 	return (SUCCESS);
 }
