@@ -141,18 +141,15 @@ void				recv_ping(t_mgr *mgr, struct timeval *now)
 		dprintf(STDERR_FILENO, "Error recvmsg().%s\n", strerror(errno));
 		exit(FAILURE);
 	}
-	else if (rbyte == 0)
-	{
-		if (g_toflg == TRUE)
-		{
-			printf("Request timeout for icmp_seq %zu\n", mgr->seq - 1);
-			g_toflg = FALSE;
-		}
-	}
 	else
 	{
 		alarm(0);
 		handel_response(resp, now, rbyte);
+	}
+	if (g_toflg == TRUE)
+	{
+		printf("Request timeout for icmp_seq %zu\n", mgr->seq - 1);
+		g_toflg = FALSE;
 	}
 }
 
