@@ -71,7 +71,6 @@ int 					send_ping(t_mgr *mgr, t_echo *echo)
 		dprintf(STDERR_FILENO, "Error sendto(). %s\n", strerror(errno));
 		exit(FAILURE);
 	}
-	printf("Sent\n");
 	return (SUCCESS);
 }
 
@@ -161,21 +160,18 @@ int 					ping_loop(t_mgr *mgr, t_echo *echo)
 
 	gettimeofday(&then, NULL);
 	//signal(SIGALRM, alarm_handel_timeout);
-	printf("Entered Ping\n");
 	while (mgr->count)
 	{
 		gettimeofday(&now, NULL);
 		if ((now.tv_sec + (1.0 / 1000000) * now.tv_usec) -
 			(then.tv_sec + (1.0 / 1000000) * then.tv_usec) > 1.0)
 		{
-			printf("Sending Message\n");
 			send_ping(mgr, echo);
 			//alarm(1);
 			if (mgr->flags.count == TRUE)
 				mgr->count -= 1;
 			echo->icmp.icmp_hun.ih_idseq.icd_seq = ntohs(++mgr->seq);
 			gettimeofday(&then, NULL);
-			printf("At recvmsg\n");
 			recv_ping(mgr, &now);
 		}
 	}
