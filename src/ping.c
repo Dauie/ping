@@ -116,7 +116,7 @@ int 				handel_response(struct msghdr *resp, struct timeval *now, ssize_t rbyte)
 	if (icmp->icmp_type == TYPE_ECHO_RPLY)
 	{
 		timediff = (now->tv_sec + (1.0 / 1000000) * now->tv_usec) -
-				   (then->tv_sec + (1.0 / 1000000) * then->tv_usec);
+				(then->tv_sec + (1.0 / 1000000) * then->tv_usec);
 		seq = ntohs((u_short)((struct icmp *)&((u_int8_t *)resp->msg_control)[IPV4_HDRLEN])->icmp_hun.ih_idseq.icd_seq);
 		ttl = ((struct ip *)resp->msg_control)->ip_ttl;
 		src = &((struct ip *)resp->msg_control)->ip_src;
@@ -150,7 +150,10 @@ void				recv_ping(t_mgr *mgr, struct timeval *now)
 		}
 	}
 	else
+	{
+		alarm(0);
 		handel_response(resp, now, rbyte);
+	}
 }
 
 int 					ping_loop(t_mgr *mgr, t_echo *echo)
@@ -159,7 +162,7 @@ int 					ping_loop(t_mgr *mgr, t_echo *echo)
 	struct timeval	now;
 
 	gettimeofday(&then, NULL);
-	//signal(SIGALRM, alarm_handel_timeout);
+	signal(SIGALRM, alarm_handel_timeout);
 	while (mgr->count)
 	{
 		gettimeofday(&now, NULL);
@@ -167,7 +170,7 @@ int 					ping_loop(t_mgr *mgr, t_echo *echo)
 			(then.tv_sec + (1.0 / 1000000) * then.tv_usec) > 1.0)
 		{
 			send_ping(mgr, echo);
-			//alarm(1);
+			alarm(1);
 			if (mgr->flags.count == TRUE)
 				mgr->count -= 1;
 			echo->icmp.icmp_hun.ih_idseq.icd_seq = ntohs(++mgr->seq);
