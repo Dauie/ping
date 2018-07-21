@@ -118,7 +118,7 @@ int 				handel_response(struct msghdr *resp, struct timeval *now, ssize_t rbyte)
 	{
 		timediff = (now->tv_sec + (1.0 / 1000000) * now->tv_usec) -
 				   (then->tv_sec + (1.0 / 1000000) * then->tv_usec);
-		seq = (u_short)((struct icmp *)&((u_int8_t *)resp->msg_control)[IPV4_HDRLEN])->icmp_hun.ih_idseq.icd_seq;
+		seq = ntohs((u_short)((struct icmp *)&((u_int8_t *)resp->msg_control)[IPV4_HDRLEN])->icmp_hun.ih_idseq.icd_seq);
 		ttl = ((struct ip *)resp->msg_control)->ip_ttl;
 		src = &((struct ip *)resp->msg_control)->ip_src;
 		inet_ntop(AF_INET, src, addr, IPV4_ADDR_LEN);
