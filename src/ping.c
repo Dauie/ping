@@ -1,7 +1,5 @@
 #include "../incl/ping.h"
 
-
-
 static u_int16_t 		update_checksum(t_echo *echo, u_int8_t *packet)
 {
 	return (checksum((packet + IPV4_HDRLEN),
@@ -12,8 +10,8 @@ static void				init_icmp_header_request(t_mgr *mgr, struct icmp *icmp)
 {
 	icmp->icmp_type = ICMP_ECHO;
 	icmp->icmp_code = 0;
-	icmp->icmp_hun.ih_idseq.icd_id = htons(mgr->pid);
-	icmp->icmp_hun.ih_idseq.icd_seq = htons(mgr->seq);
+	icmp->icmp_hun.ih_idseq.icd_id = htons((uint16_t)mgr->pid);
+	icmp->icmp_hun.ih_idseq.icd_seq = htons((uint16_t)mgr->seq);
 }
 
 static void				init_ip_header(t_mgr *mgr, struct ip *ip, t_echo *echo)
@@ -78,12 +76,9 @@ struct msghdr		*init_msghdr()
 {
 	struct iovec	*iov;
 	struct msghdr	*resp;
-	u_int8_t		*addrbuff;
 	u_int8_t		*resp_data;
 
 	if (!(resp = ft_memalloc(sizeof(struct msghdr))))
-		return (NULL);
-	if (!(addrbuff = ft_memalloc(sizeof(IPV4_ADDR_LEN))))
 		return (NULL);
 	if (!(resp_data = ft_memalloc(256)))
 		return (NULL);
@@ -92,13 +87,17 @@ struct msghdr		*init_msghdr()
 	iov->iov_base = resp_data;
 	iov->iov_len = 256;
 	ft_memset(resp, 0, sizeof(struct msghdr));
-	resp->msg_name = addrbuff;
-	resp->msg_namelen = IPV4_ADDR_LEN;
 	resp->msg_iov = iov;
 	resp->msg_iovlen = 1;
 	resp->msg_control = resp_data;
 	resp->msg_controllen = sizeof(resp_data);
 	return (resp);
+}
+
+float				time_diff_ms(struct timeval t1, struct timeval t2)
+{
+	return ((((float)t1.tv_sec - (float)t2.tv_sec) * 1000000) +
+			((float)t1.tv_usec - (float)t2.tv_usec))/1000;
 }
 
 int 				handel_response(struct msghdr *resp, struct timeval *now, ssize_t rbyte)
@@ -111,20 +110,23 @@ int 				handel_response(struct msghdr *resp, struct timeval *now, ssize_t rbyte)
 	u_short			seq;
 	char 			ttl;
 
+
 	icmp = (struct icmp *)&((u_int8_t *)resp->msg_control)[IPV4_HDRLEN];
 	then = (struct timeval *)&((u_int8_t *)resp->msg_control)[IPV4_HDRLEN + ICMP_HDRLEN];
+	seq = ntohs((u_short)((struct icmp *)&((u_int8_t *)resp->msg_control)[IPV4_HDRLEN])->icmp_hun.ih_idseq.icd_seq);
+	src = &((struct ip *)resp->msg_control)->ip_src;
+	inet_ntop(AF_INET, src, addr, IPV4_ADDR_LEN);
 	if (icmp->icmp_type == TYPE_ECHO_RPLY)
 	{
-		timediff = (now->tv_sec + (1.0 / 1000000) * now->tv_usec) -
-				(then->tv_sec + (1.0 / 1000000) * then->tv_usec);
-		seq = ntohs((u_short)((struct icmp *)&((u_int8_t *)resp->msg_control)[IPV4_HDRLEN])->icmp_hun.ih_idseq.icd_seq);
+		timediff = time_diff_ms(*then, *now);
 		ttl = ((struct ip *)resp->msg_control)->ip_ttl;
-		src = &((struct ip *)resp->msg_control)->ip_src;
-		inet_ntop(AF_INET, src, addr, IPV4_ADDR_LEN);
 
 		printf("%zu bytes from %s: icmp_seq=%u ttl=%i time=%f ms\n",
 			   rbyte, addr, seq, (int)ttl, timediff);
 	}
+	else if (icmp->icmp_type == TYPE_DST_UNRCH)
+		printf("From %s icmp_seq=%u Destination Host Unreachable\n", addr, seq);
+
 	return (SUCCESS);
 }
 
