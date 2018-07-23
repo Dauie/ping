@@ -94,10 +94,19 @@ struct msghdr		*init_msghdr()
 	return (resp);
 }
 
-float				time_diff_ms(struct timeval t1, struct timeval t2)
+void				clean_msghdr(struct msghdr **msg)
 {
-	return ((((float)t1.tv_sec - (float)t2.tv_sec) * 1000000) +
-			((float)t1.tv_usec - (float)t2.tv_usec))/1000;
+	free((*msg)->msg_iov->iov_base);
+	free((*msg)->msg_iov);
+	free(*msg);
+}
+
+long double time_diff(struct timeval *then, struct timeval *now)
+{
+	long double x =
+			(double)(then->tv_usec - now->tv_usec) / 1000.0L +
+			(double)(then->tv_sec - now->tv_sec) * 1000.0L;
+	return x;
 }
 
 int 				handel_response(struct msghdr *resp, struct timeval *now, ssize_t rbyte)
@@ -105,11 +114,10 @@ int 				handel_response(struct msghdr *resp, struct timeval *now, ssize_t rbyte)
 	struct icmp		*icmp;
 	struct timeval	*then;
 	struct in_addr	*src;
-	double			timediff;
+	long double		ms;
 	char 			addr[IPV4_ADDR_LEN];
 	u_short			seq;
 	char 			ttl;
-
 
 	icmp = (struct icmp *)&((u_int8_t *)resp->msg_control)[IPV4_HDRLEN];
 	then = (struct timeval *)&((u_int8_t *)resp->msg_control)[IPV4_HDRLEN + ICMP_HDRLEN];
@@ -118,11 +126,11 @@ int 				handel_response(struct msghdr *resp, struct timeval *now, ssize_t rbyte)
 	inet_ntop(AF_INET, src, addr, IPV4_ADDR_LEN);
 	if (icmp->icmp_type == TYPE_ECHO_RPLY)
 	{
-		timediff = time_diff_ms(*then, *now);
+		ms = time_diff(now, then);
 		ttl = ((struct ip *)resp->msg_control)->ip_ttl;
 
-		printf("%zu bytes from %s: icmp_seq=%u ttl=%i time=%f ms\n",
-			   rbyte, addr, seq, (int)ttl, timediff);
+		printf("%zu bytes from %s: icmp_seq=%u ttl=%i time=%Lf ms\n",
+			   rbyte, addr, seq, (int)ttl, ms);
 	}
 	else if (icmp->icmp_type == TYPE_DST_UNRCH)
 		printf("From %s icmp_seq=%u Destination Host Unreachable\n", addr, seq);
@@ -139,13 +147,16 @@ void				recv_ping(t_mgr *mgr, struct timeval *now)
 	if ((rbyte = recvmsg(mgr->sock, resp, MSG_DONTWAIT)) < 0)
 	{
 		if (errno == EAGAIN)
-			return ;
+		{
+			clean_msghdr(&resp);
+			return;
+		}
 		dprintf(STDERR_FILENO, "Error recvmsg().%s\n", strerror(errno));
 		exit(FAILURE);
 	}
 	else
 	{
-		alarm(0);
+		//alarm(0);
 		handel_response(resp, now, rbyte);
 	}
 	if (g_toflg == TRUE)
@@ -153,6 +164,7 @@ void				recv_ping(t_mgr *mgr, struct timeval *now)
 		printf("Request timeout for icmp_seq %zu\n", mgr->seq - 1);
 		g_toflg = FALSE;
 	}
+	clean_msghdr(&resp);
 }
 
 int 					ping_loop(t_mgr *mgr, t_echo *echo)
@@ -161,7 +173,7 @@ int 					ping_loop(t_mgr *mgr, t_echo *echo)
 	struct timeval	now;
 
 	gettimeofday(&then, NULL);
-	signal(SIGALRM, alarm_handel_timeout);
+	//signal(SIGALRM, alarm_handel_timeout);
 	while (mgr->count)
 	{
 		gettimeofday(&now, NULL);
@@ -169,13 +181,13 @@ int 					ping_loop(t_mgr *mgr, t_echo *echo)
 			(then.tv_sec + (1.0 / 1000000) * then.tv_usec) > 1.0)
 		{
 			send_ping(mgr, echo);
-			alarm(1);
+			//alarm(1);
 			if (mgr->flags.count == TRUE)
 				mgr->count -= 1;
 			echo->icmp.icmp_hun.ih_idseq.icd_seq = ntohs(++mgr->seq);
 			gettimeofday(&then, NULL);
-			recv_ping(mgr, &now);
 		}
+		recv_ping(mgr, &now);
 	}
 	return (SUCCESS);
 }
