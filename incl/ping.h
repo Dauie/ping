@@ -58,6 +58,15 @@ typedef enum	e_msg_types
 	TYPE_INFO_RPLY = 16
 }				t_msg_types;
 
+typedef struct timeval	timeval;
+typedef struct in_addr	in_addr;
+typedef struct ip		ip;
+typedef struct icmp		icmp;
+typedef struct msghdr	msghdr;
+typedef struct iovec	iovec;
+typedef struct sockaddr	sockaddr;
+typedef struct sockaddr_in sockaddr_in;
+
 typedef struct			s_echo
 {
 	struct ip			ip;
@@ -80,6 +89,8 @@ typedef struct			s_stats
 	float				min;
 	size_t				recvd;
 	size_t				sent;
+	struct timeval		start;
+	struct timeval		end;
 }						t_stats;
 
 typedef struct			s_manager
@@ -98,7 +109,13 @@ typedef struct			s_manager
 	t_flags				flags;
 }						t_mgr;
 
-volatile int			g_toflg;
+typedef struct 			s_sigflg
+{
+	volatile int		timeoflg;
+	volatile int		exitflg;
+}						t_sigflg;
+
+t_sigflg				g_sigflgs;
 
 void					add_type(void *mem, int type);
 void					add_code(void *mem, int code);
@@ -110,6 +127,6 @@ int						create_socket(t_mgr *mgr);
 void					init_mgr(t_mgr *mgr);
 int						ping(t_mgr *mgr);
 int 					ping_loop(t_mgr *mgr, t_echo *echo);
-void					alarm_handel_timeout(int sig);
-
+void					sigalrm_handel_timeout(int sig);
+void					sigint_handel_exit(int sig);
 #endif

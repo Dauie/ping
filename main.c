@@ -33,8 +33,7 @@ static void		get_source(t_mgr *mgr)
 		exit(FAILURE);
 	}
 	inet_ntop(AF_INET, &((struct sockaddr_in *) src->ifa_addr)->sin_addr,
-			  mgr->saddr, sizeof(mgr->saddr));
-	printf("%s\n", mgr->saddr);
+			mgr->saddr, sizeof(mgr->saddr));
 	freeifaddrs(addrs);
 }
 
@@ -52,8 +51,7 @@ static void		get_destination(t_mgr *mgr, char *dst)
 		exit(FAILURE);
 	}
 	inet_ntop(AF_INET, &((struct sockaddr_in *) infoptr->ai_addr)->sin_addr,
-			  mgr->daddr, sizeof(mgr->daddr));
-	printf("%s\n", mgr->daddr);
+			mgr->daddr, sizeof(mgr->daddr));
 	freeaddrinfo(infoptr);
 }
 
@@ -107,6 +105,7 @@ int				main(int ac, char **av)
 	get_source(mgr);
 	parse_arguments(mgr, ac, av);
 	create_socket(mgr);
+	ft_memset(&g_sigflgs, 0, sizeof(t_sigflg));
 	ping(mgr);
 	return (SUCCESS);
 }

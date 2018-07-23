@@ -6,7 +6,7 @@ static u_int16_t 		update_checksum(t_echo *echo, u_int8_t *packet)
 				(ICMP_HDRLEN + sizeof(echo->time) + echo->datalen)));
 }
 
-static void				init_icmp_header_request(t_mgr *mgr, struct icmp *icmp)
+static void				init_icmp_header_request(t_mgr *mgr, icmp *icmp)
 {
 	icmp->icmp_type = ICMP_ECHO;
 	icmp->icmp_code = 0;
@@ -14,7 +14,7 @@ static void				init_icmp_header_request(t_mgr *mgr, struct icmp *icmp)
 	icmp->icmp_hun.ih_idseq.icd_seq = htons((uint16_t)mgr->seq);
 }
 
-static void				init_ip_header(t_mgr *mgr, struct ip *ip, t_echo *echo)
+static void				init_ip_header(t_mgr *mgr, ip *ip, t_echo *echo)
 {
 	ip->ip_hl = IPV4_HDRLEN / sizeof(uint32_t);
 	ip->ip_v = 4;
@@ -37,9 +37,9 @@ static void				init_ip_header(t_mgr *mgr, struct ip *ip, t_echo *echo)
 	}
 }
 
-void					prep_sockaddr(struct sockaddr_in *sin, t_echo *echo)
+void					prep_sockaddr(sockaddr_in *sin, t_echo *echo)
 {
-	ft_memset(sin, 0, sizeof (struct sockaddr_in));
+	ft_memset(sin, 0, sizeof (sockaddr_in));
 	sin->sin_family = AF_INET;
 	sin->sin_addr.s_addr = echo->ip.ip_dst.s_addr;
 }
@@ -64,7 +64,7 @@ int 					send_ping(t_mgr *mgr, t_echo *echo)
 	fill_packet(packet, echo);
 	if (sendto(mgr->sock, packet, (IPV4_HDRLEN + ICMP_HDRLEN +
 								   sizeof(echo->time) + echo->datalen), 0,
-			   (struct sockaddr *)&mgr->sin, sizeof(struct sockaddr)) < 0)
+			(struct sockaddr *)&mgr->sin, sizeof(sockaddr)) < 0)
 	{
 		dprintf(STDERR_FILENO, "Error sendto(). %s\n", strerror(errno));
 		exit(FAILURE);
@@ -72,21 +72,21 @@ int 					send_ping(t_mgr *mgr, t_echo *echo)
 	return (SUCCESS);
 }
 
-struct msghdr		*init_msghdr()
+msghdr				*init_msghdr()
 {
-	struct iovec	*iov;
-	struct msghdr	*resp;
+	iovec			*iov;
+	msghdr			*resp;
 	u_int8_t		*resp_data;
 
-	if (!(resp = ft_memalloc(sizeof(struct msghdr))))
+	if (!(resp = ft_memalloc(sizeof(msghdr))))
 		return (NULL);
 	if (!(resp_data = ft_memalloc(256)))
 		return (NULL);
-	if (!(iov = ft_memalloc(sizeof(struct iovec))))
+	if (!(iov = ft_memalloc(sizeof(iovec))))
 		return (NULL);
 	iov->iov_base = resp_data;
 	iov->iov_len = 256;
-	ft_memset(resp, 0, sizeof(struct msghdr));
+	ft_memset(resp, 0, sizeof(msghdr));
 	resp->msg_iov = iov;
 	resp->msg_iovlen = 1;
 	resp->msg_control = resp_data;
@@ -94,14 +94,14 @@ struct msghdr		*init_msghdr()
 	return (resp);
 }
 
-void				clean_msghdr(struct msghdr **msg)
+void				clean_msghdr(msghdr **msg)
 {
 	free((*msg)->msg_iov->iov_base);
 	free((*msg)->msg_iov);
 	free(*msg);
 }
 
-long double time_diff(struct timeval *then, struct timeval *now)
+long double time_diff(timeval *then, timeval *now)
 {
 	long double x =
 			(double)(then->tv_usec - now->tv_usec) / 1000.0L +
@@ -109,38 +109,50 @@ long double time_diff(struct timeval *then, struct timeval *now)
 	return x;
 }
 
-int 				handel_response(struct msghdr *resp, struct timeval *now, ssize_t rbyte)
+void		update_minmaxavg(t_stats *stats, float ms)
 {
-	struct icmp		*icmp;
-	struct timeval	*then;
-	struct in_addr	*src;
-	long double		ms;
+	if (stats->min == 0)
+		stats->min = ms;
+	if (stats->max == 0)
+		stats->max = ms;
+	if (stats->avg == 0)
+		stats->avg = ms;
+	if (ms > stats->max)
+		stats->max = ms;
+	if (ms < stats->min)
+		stats->min = ms;
+	stats->avg = (stats->avg + ms) / 2;
+}
+
+int 				handel_response(msghdr *resp, timeval *now, t_mgr *mgr, ssize_t rbyte)
+{
+	icmp			*icmp;
+	timeval			*then;
+	in_addr			*src;
+	float			ms;
 	char 			addr[IPV4_ADDR_LEN];
 	u_short			seq;
 	char 			ttl;
 
 	icmp = (struct icmp *)&((u_int8_t *)resp->msg_control)[IPV4_HDRLEN];
-	then = (struct timeval *)&((u_int8_t *)resp->msg_control)[IPV4_HDRLEN + ICMP_HDRLEN];
+	then = (timeval *)&((u_int8_t *)resp->msg_control)[IPV4_HDRLEN + ICMP_HDRLEN];
+	ms = (float)time_diff(now, then);
+	update_minmaxavg(&mgr->stats, ms);
 	seq = ntohs((u_short)((struct icmp *)&((u_int8_t *)resp->msg_control)[IPV4_HDRLEN])->icmp_hun.ih_idseq.icd_seq);
 	src = &((struct ip *)resp->msg_control)->ip_src;
 	inet_ntop(AF_INET, src, addr, IPV4_ADDR_LEN);
+	ttl = ((ip *)resp->msg_control)->ip_ttl;
 	if (icmp->icmp_type == TYPE_ECHO_RPLY)
-	{
-		ms = time_diff(now, then);
-		ttl = ((struct ip *)resp->msg_control)->ip_ttl;
-
-		printf("%zu bytes from %s: icmp_seq=%u ttl=%i time=%Lf ms\n",
-			   rbyte, addr, seq, (int)ttl, ms);
-	}
+		printf("%zu bytes from %s: icmp_seq=%u ttl=%i time=%.2f ms\n",
+			rbyte, addr, seq, (int)ttl, ms);
 	else if (icmp->icmp_type == TYPE_DST_UNRCH)
 		printf("From %s icmp_seq=%u Destination Host Unreachable\n", addr, seq);
-
 	return (SUCCESS);
 }
 
-void				recv_ping(t_mgr *mgr, struct timeval *now)
+void				recv_ping(t_mgr *mgr, timeval *now)
 {
-	struct msghdr	*resp;
+	msghdr			*resp;
 	ssize_t 		rbyte;
 
 	resp = init_msghdr();
@@ -156,32 +168,35 @@ void				recv_ping(t_mgr *mgr, struct timeval *now)
 	}
 	else
 	{
-		//alarm(0);
-		handel_response(resp, now, rbyte);
+		alarm(0);
+		mgr->stats.recvd++;
+		handel_response(resp, now, mgr, rbyte);
 	}
-	if (g_toflg == TRUE)
+	if (g_sigflgs.timeoflg == TRUE)
 	{
-		printf("Request timeout for icmp_seq %zu\n", mgr->seq - 1);
-		g_toflg = FALSE;
+		printf("Request timeout for icmp_seq %zu\n", mgr->seq - 5);
+		g_sigflgs.timeoflg = FALSE;
 	}
 	clean_msghdr(&resp);
 }
 
 int 					ping_loop(t_mgr *mgr, t_echo *echo)
 {
-	struct timeval	then;
-	struct timeval	now;
+	timeval	then;
+	timeval	now;
 
 	gettimeofday(&then, NULL);
-	//signal(SIGALRM, alarm_handel_timeout);
-	while (mgr->count)
+	signal(SIGALRM, sigalrm_handel_timeout);
+	signal(SIGINT, sigint_handel_exit);
+	while (mgr->count && g_sigflgs.exitflg == FALSE)
 	{
 		gettimeofday(&now, NULL);
 		if ((now.tv_sec + (1.0 / 1000000) * now.tv_usec) -
 			(then.tv_sec + (1.0 / 1000000) * then.tv_usec) > 1.0)
 		{
 			send_ping(mgr, echo);
-			//alarm(1);
+			mgr->stats.sent++;
+			alarm(4);
 			if (mgr->flags.count == TRUE)
 				mgr->count -= 1;
 			echo->icmp.icmp_hun.ih_idseq.icd_seq = ntohs(++mgr->seq);
@@ -192,6 +207,31 @@ int 					ping_loop(t_mgr *mgr, t_echo *echo)
 	return (SUCCESS);
 }
 
+float					get_percentage(size_t a, size_t b)
+{
+	size_t 				diff;
+
+	diff = a - b;
+	if (diff == 0)
+		return (0.00f);
+	else
+		return (((float)diff / a) * 100);
+}
+
+void					print_stats(t_mgr *mgr)
+{
+	long double packet_loss;
+	long double duration;
+
+	packet_loss = get_percentage(mgr->stats.sent, mgr->stats.recvd);
+	duration = time_diff(&mgr->stats.end, &mgr->stats.start);
+	printf("\n--- %s ping statistics ---\n", mgr->domain);
+	printf("%zu packets transmitted, %zu received, %.2Lf%% packet loss, time %.0Lfms\n",
+		mgr->stats.sent, mgr->stats.recvd, packet_loss, duration);
+	/*TODO: MDEV standard deviation or 'jitter'*/
+	printf("rtt min/avg/max/mdev = %.3f/%.3f/%.3f ms\n", mgr->stats.min, mgr->stats.avg, mgr->stats.max);
+}
+
 int						ping(t_mgr *mgr)
 {
 	ft_strcpy(mgr->echo.data, "                !\"#$%&'()*+,-./01234567");
@@ -200,8 +240,11 @@ int						ping(t_mgr *mgr)
 	init_icmp_header_request(mgr, &mgr->echo.icmp);
 	prep_sockaddr(&mgr->sin, &mgr->echo);
 	printf("PING %s (%s) %zu(%zu) bytes of data.\n",
-		mgr->domain, mgr->daddr, mgr->echo.datalen + sizeof(struct timeval),
-			IPV4_HDRLEN + ICMP_HDRLEN + mgr->echo.datalen + sizeof(struct timeval));
+		mgr->domain, mgr->daddr, mgr->echo.datalen + sizeof(timeval),
+			IPV4_HDRLEN + ICMP_HDRLEN + mgr->echo.datalen + sizeof(timeval));
+	gettimeofday(&mgr->stats.start, NULL);
 	ping_loop(mgr, &mgr->echo);
+	gettimeofday(&mgr->stats.end, NULL);
+	print_stats(mgr);
 	return (SUCCESS);
 }
