@@ -38,24 +38,12 @@
 * -h Show help.
 **/
 
-//typedef enum	e_offsets
-//{
-//
-//}				e_off;
-
 typedef enum	e_msg_types
 {
 	TYPE_ECHO_RPLY = 0,
 	TYPE_DST_UNRCH = 3,
-	TYPE_SRC_QUNCH = 4,
-	TYPE_REDIRECT = 5,
-	TYPE_ECHO_REQ = 8,
 	TYPE_TIME_EXCD = 11,
 	TYPE_PARAM_PRBLM = 12,
-	TYPE_TIME_STMP = 13,
-	TYPE_TSTMP_RPLY = 14,
-	TYPE_INFO_REQ = 15,
-	TYPE_INFO_RPLY = 16
 }				t_msg_types;
 
 typedef struct timeval	timeval;
