@@ -213,6 +213,7 @@ int 				ping_loop(t_mgr *mgr, t_echo *echo)
 		}
 		recv_ping(mgr, &now);
 	}
+	recv_ping(mgr, &now);
 	return (SUCCESS);
 }
 
