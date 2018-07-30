@@ -172,7 +172,7 @@ void				recv_ping(t_mgr *mgr, struct timeval *now)
 	resp = init_msghdr();
 	if ((rbyte = recvmsg(mgr->sock, resp, MSG_DONTWAIT)) < 0)
 	{
-		if (errno == EAGAIN)
+		if (errno == EAGAIN || errno == EWOULDBLOCK)
 		{
 			clean_msghdr(&resp);
 			return;
@@ -217,10 +217,6 @@ int 				ping_loop(t_mgr *mgr, t_echo *echo)
 		}
 		recv_ping(mgr, &now);
 	}
-	then.tv_usec = 500000;
-	then.tv_sec = 0;
-	setrecvtimeout(mgr, &then);
-	recv_ping(mgr, &now);
 	return (SUCCESS);
 }
 
