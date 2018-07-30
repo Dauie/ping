@@ -78,8 +78,8 @@ typedef struct			s_manager
 	struct sockaddr_in	sin;
 	t_echo				echo;
 	char				domain[DOMAIN_NAME_LEN];
-	char				daddr[IPV4_ADDR_LEN];
-	char				saddr[IPV4_ADDR_LEN];
+	char				daddr[INET_ADDRSTRLEN];
+	char				saddr[INET_ADDRSTRLEN];
 	t_stats				stats;
 	t_flags				flags;
 }						t_mgr;

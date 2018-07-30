@@ -138,7 +138,7 @@ int 				handel_response(struct msghdr *resp, struct timeval *now,
 	struct timeval	*then;
 	struct in_addr	*src;
 	float			ms;
-	char 			addr[IPV4_ADDR_LEN];
+	char 			addr[INET_ADDRSTRLEN];
 	u_short			seq;
 	char 			ttl;
 
@@ -150,7 +150,7 @@ int 				handel_response(struct msghdr *resp, struct timeval *now,
 	seq = ntohs((u_short)((struct icmp *)&((u_int8_t *)
 			resp->msg_control)[IPV4_HDRLEN])->icmp_hun.ih_idseq.icd_seq);
 	src = &((struct ip *)resp->msg_control)->ip_src;
-	inet_ntop(AF_INET, src, addr, IPV4_ADDR_LEN);
+	inet_ntop(AF_INET, src, addr, INET_ADDRSTRLEN);
 	ttl = ((struct ip *)resp->msg_control)->ip_ttl;
 	if (icmp->icmp_type == TYPE_ECHO_RPLY)
 		printf("%zu bytes from %s: icmp_seq=%u ttl=%i time=%.2f ms\n",
