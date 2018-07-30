@@ -1,6 +1,5 @@
 #include "../incl/ping.h"
 
-
 int 	setrecvtimeout(t_mgr *mgr, struct timeval *tout)
 {
 	if (setsockopt(mgr->sock, SOL_SOCKET, SO_RCVTIMEO, tout, sizeof(struct timeval)) < 0)
@@ -28,7 +27,7 @@ int		setopt(t_mgr *mgr)
 
 	on = 1;
 	tout.tv_sec = 0;
-	tout.tv_usec = 100000;
+	tout.tv_usec = 1000;
 	if (setsockopt(mgr->sock, IPPROTO_IP, IP_HDRINCL, &on, sizeof(on)) < 0)
 	{
 		dprintf(STDERR_FILENO, "Error setsockopt()\n");
