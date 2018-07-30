@@ -103,12 +103,17 @@ void				clean_msghdr(struct msghdr **msg)
 	free(*msg);
 }
 
-long double			time_diff(struct timeval *then, struct timeval *now)
+long double			time_diff_ms(struct timeval *then, struct timeval *now)
 {
 	long double x =
 			(double)(then->tv_usec - now->tv_usec) / 1000.0L +
 			(double)(then->tv_sec - now->tv_sec) * 1000.0L;
 	return x;
+}
+long double			time_diff_sec(struct timeval *then, struct timeval *now)
+{
+	return ((now->tv_sec + (1.0 / 1000000) * now->tv_usec) -
+		(then->tv_sec + (1.0 / 1000000) * then->tv_usec) > 1.0)
 }
 
 void				update_minmaxavg(t_stats *stats, float ms)
@@ -140,7 +145,7 @@ int 				handel_response(struct msghdr *resp, struct timeval *now,
 	icmp = (struct icmp *)&((u_int8_t *)resp->msg_control)[IPV4_HDRLEN];
 	then = (struct timeval *)&((u_int8_t *)
 			resp->msg_control)[IPV4_HDRLEN + ICMP_HDRLEN];
-	ms = (float)time_diff(now, then);
+	ms = (float)time_diff_ms(now, then);
 	update_minmaxavg(&mgr->stats, ms);
 	seq = ntohs((u_short)((struct icmp *)&((u_int8_t *)
 			resp->msg_control)[IPV4_HDRLEN])->icmp_hun.ih_idseq.icd_seq);
@@ -200,8 +205,7 @@ int 				ping_loop(t_mgr *mgr, t_echo *echo)
 	while (mgr->count && g_sigflgs.exitflg == FALSE)
 	{
 		gettimeofday(&now, NULL);
-		if ((now.tv_sec + (1.0 / 1000000) * now.tv_usec) -
-			(then.tv_sec + (1.0 / 1000000) * then.tv_usec) > 1.0)
+		if (time_diff_sec(&then, &now) > 1.0)
 		{
 			send_ping(mgr, echo);
 			mgr->stats.sent++;
@@ -213,6 +217,9 @@ int 				ping_loop(t_mgr *mgr, t_echo *echo)
 		}
 		recv_ping(mgr, &now);
 	}
+	then.tv_usec = 500000;
+	then.tv_sec = 0;
+	setrecvtimeout(mgr, &then);
 	recv_ping(mgr, &now);
 	return (SUCCESS);
 }
@@ -234,7 +241,7 @@ void					print_stats(t_mgr *mgr)
 	long double duration;
 
 	packet_loss = get_percentage(mgr->stats.sent, mgr->stats.recvd);
-	duration = time_diff(&mgr->stats.end, &mgr->stats.start);
+	duration = time_diff_ms(&mgr->stats.end, &mgr->stats.start);
 	printf("\n--- %s ping statistics ---\n", mgr->domain);
 	printf("%zu packets transmitted, %zu received, %.2Lf%% packet loss, time %.0Lfms\n",
 		mgr->stats.sent, mgr->stats.recvd, packet_loss, duration);

@@ -1,6 +1,26 @@
 #include "../incl/ping.h"
 
 
+int 	setrecvtimeout(t_mgr *mgr, struct timeval *tout)
+{
+	if (setsockopt(mgr->sock, SOL_SOCKET, SO_RCVTIMEO, tout, sizeof(struct timeval)) < 0)
+	{
+		dprintf(STDERR_FILENO, "Error setsockopt()\n");
+		exit(FAILURE);
+	}
+	return (SUCCESS);
+}
+
+int		setsendtimeout(t_mgr *mgr, struct timeval *tout)
+{
+	if (setsockopt(mgr->sock, SOL_SOCKET, SO_SNDTIMEO, tout, sizeof(struct timeval)) < 0)
+	{
+		dprintf(STDERR_FILENO, "Error setsockopt()\n");
+		exit(FAILURE);
+	}
+	return (SUCCESS);
+}
+
 int		setopt(t_mgr *mgr)
 {
 	int on;
@@ -14,16 +34,8 @@ int		setopt(t_mgr *mgr)
 		dprintf(STDERR_FILENO, "Error setsockopt()\n");
 		exit(FAILURE);
 	}
-	if (setsockopt(mgr->sock, SOL_SOCKET, SO_RCVTIMEO, &tout, sizeof(struct timeval)) < 0)
-	{
-		dprintf(STDERR_FILENO, "Error setsockopt()\n");
-		exit(FAILURE);
-	}
-	if (setsockopt(mgr->sock, SOL_SOCKET, SO_SNDTIMEO, &tout, sizeof(struct timeval)) < 0)
-	{
-		dprintf(STDERR_FILENO, "Error setsockopt()\n");
-		exit(FAILURE);
-	}
+	setsendtimeout(mgr, &tout);
+	setrecvtimeout(mgr, &tout);
 	return (SUCCESS);
 }
 

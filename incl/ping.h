@@ -98,6 +98,7 @@ int						create_socket(t_mgr *mgr);
 void					init_mgr(t_mgr *mgr);
 int						ping(t_mgr *mgr);
 int 					ping_loop(t_mgr *mgr, t_echo *echo);
+int 					setrecvtimeout(t_mgr *mgr, struct timeval *tout);
 void					sigalrm_handel_timeout(int sig);
 void					sigint_handel_exit(int sig);
 #endif
