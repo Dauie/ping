@@ -2,7 +2,6 @@
 #define PING_H
 
 #define ICMP_HDRLEN 8         // ICMP header length for echo request, excludes data
-# define IPV4_ADDR_LEN sizeof(struct sockaddr_in)
 
 #include <errno.h>
 #include <stdint.h>
