@@ -113,7 +113,7 @@ long double			time_diff_ms(struct timeval *then, struct timeval *now)
 long double			time_diff_sec(struct timeval *then, struct timeval *now)
 {
 	return ((now->tv_sec + (1.0 / 1000000) * now->tv_usec) -
-		(then->tv_sec + (1.0 / 1000000) * then->tv_usec) > 1.0)
+		(then->tv_sec + (1.0 / 1000000) * then->tv_usec) > 1.0);
 }
 
 void				update_minmaxavg(t_stats *stats, float ms)
