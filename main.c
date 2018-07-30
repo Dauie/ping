@@ -37,9 +37,9 @@ static int		parse_arguments(t_mgr *mgr, int ac, char **av)
 	i = 0;
 	while (av[++i])
 	{
-		if (av[i][0] != '-' || ac == 2){
-
-			if (!ft_domtoip(av[i], mgr->daddr))
+		if (av[i][0] != '-' || ac == 2)
+		{
+			if (ft_domtoip(av[i], mgr->daddr) == FAILURE)
 			{
 				dprintf(STDERR_FILENO, "ping: cannot resolve %s: Unknown host\n", av[i]);
 				exit(FAILURE);
@@ -60,9 +60,9 @@ int				main(int ac, char **av)
 	if (!(mgr = ft_memalloc(sizeof(t_mgr))))
 		return (FAILURE);
 	init_mgr(mgr);
-	if (!(ft_gethstaddr(mgr->saddr)))
+	if (ft_gethstaddr(mgr->saddr) == FAILURE)
 	{
-		dprintf(STDERR_FILENO, "ping: could not find suitable IP for localhost");
+		dprintf(STDERR_FILENO, "ping: could not find suitable IP for localhost\n");
 		exit(FAILURE);
 	}
 	parse_arguments(mgr, ac, av);
