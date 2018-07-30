@@ -7,54 +7,6 @@ static void			useage(void)
 	exit(SUCCESS);
 }
 
-//static struct ifaddrs	*find_useable_src(struct ifaddrs *addrs)
-//{
-//	while (addrs)
-//	{
-//		if (addrs->ifa_addr && (addrs->ifa_flags & IFF_UP))
-//		{
-//			if (addrs->ifa_addr->sa_family == AF_INET &&
-//				((struct sockaddr_in *)addrs->ifa_addr)->sin_addr.s_addr != htonl(2130706433UL))
-//				return (addrs);
-//		}
-//		addrs = addrs->ifa_next;
-//	}
-//	return (NULL);
-//}
-//
-//static void		get_source(t_mgr *mgr)
-//{
-//	struct ifaddrs	*addrs;
-//	struct ifaddrs	*src;
-//
-//	if (getifaddrs(&addrs) != 0 || !(src = find_useable_src(addrs)))
-//	{
-//		dprintf(STDERR_FILENO, "ping: could not find suitable IP for localhost");
-//		exit(FAILURE);
-//	}
-//	inet_ntop(AF_INET, &((struct sockaddr_in *) src->ifa_addr)->sin_addr,
-//			mgr->saddr, sizeof(mgr->saddr));
-//	freeifaddrs(addrs);
-//}
-//
-//static void		get_destination(t_mgr *mgr, char *dst)
-//{
-//	struct addrinfo hints;
-//	struct addrinfo *infoptr;
-//
-//	ft_memset(&hints, 0, sizeof(hints));
-//	hints.ai_family = AF_INET;
-//	ft_memcpy(mgr->domain, dst, ft_strlen(dst));
-//	if (getaddrinfo(dst, 0, &hints, &infoptr) != 0)
-//	{
-//		dprintf(STDERR_FILENO, "ping: cannot resolve %s: Unknown host\n", dst);
-//		exit(FAILURE);
-//	}
-//	inet_ntop(AF_INET, &((struct sockaddr_in *) infoptr->ai_addr)->sin_addr,
-//			mgr->daddr, sizeof(mgr->daddr));
-//	freeaddrinfo(infoptr);
-//}
-
 static void		set_option(t_mgr *mgr, char opt, char **av, int *i)
 {
 	if (opt == 'c')
