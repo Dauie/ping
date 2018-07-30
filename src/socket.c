@@ -4,7 +4,7 @@
 int		setopt(t_mgr *mgr)
 {
 	int on;
-	timeval tout;
+	struct timeval tout;
 
 	on = 1;
 	tout.tv_sec = 0;
@@ -14,12 +14,12 @@ int		setopt(t_mgr *mgr)
 		dprintf(STDERR_FILENO, "Error setsockopt()\n");
 		exit(FAILURE);
 	}
-	if (setsockopt(mgr->sock, SOL_SOCKET, SO_RCVTIMEO, &tout, sizeof(timeval)) < 0)
+	if (setsockopt(mgr->sock, SOL_SOCKET, SO_RCVTIMEO, &tout, sizeof(struct timeval)) < 0)
 	{
 		dprintf(STDERR_FILENO, "Error setsockopt()\n");
 		exit(FAILURE);
 	}
-	if (setsockopt(mgr->sock, SOL_SOCKET, SO_SNDTIMEO, &tout, sizeof(timeval)) < 0)
+	if (setsockopt(mgr->sock, SOL_SOCKET, SO_SNDTIMEO, &tout, sizeof(struct timeval)) < 0)
 	{
 		dprintf(STDERR_FILENO, "Error setsockopt()\n");
 		exit(FAILURE);
