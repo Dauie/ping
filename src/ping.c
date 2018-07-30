@@ -137,7 +137,6 @@ int 				handel_response(struct msghdr *resp, struct timeval *now,
 	u_short			seq;
 	char 			ttl;
 
-
 	icmp = (struct icmp *)&((u_int8_t *)resp->msg_control)[IPV4_HDRLEN];
 	then = (struct timeval *)&((u_int8_t *)
 			resp->msg_control)[IPV4_HDRLEN + ICMP_HDRLEN];
@@ -153,10 +152,10 @@ int 				handel_response(struct msghdr *resp, struct timeval *now,
 			rbyte, addr, seq, (int)ttl, ms);
 	else if (icmp->icmp_type == TYPE_DST_UNRCH && mgr->flags.verbose == TRUE)
 		printf("From %s icmp_seq=%u Destination Host Unreachable\n", addr, seq);
-    else if (icmp->icmp_type == TYPE_TIME_EXCD && mgr->flags.verbose == TRUE)
-        printf("From %s icmp_seq=%u Time to live exceeded\n", addr, seq);
-    else if (icmp->icmp_type == TYPE_PARAM_PRBLM && mgr->flags.verbose == TRUE)
-        printf("From %s icmp_seq=%u Parameter problem.\n", addr, seq);
+	else if (icmp->icmp_type == TYPE_TIME_EXCD && mgr->flags.verbose == TRUE)
+		printf("From %s icmp_seq=%u Time to live exceeded\n", addr, seq);
+	else if (icmp->icmp_type == TYPE_PARAM_PRBLM && mgr->flags.verbose == TRUE)
+		printf("From %s icmp_seq=%u Parameter problem.\n", addr, seq);
 	return (SUCCESS);
 }
 
