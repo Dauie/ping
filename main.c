@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   main.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: rlutt <rlutt@student.42.fr>                +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2018/08/17 14:50:06 by rlutt             #+#    #+#             */
+/*   Updated: 2018/08/17 14:50:06 by rlutt            ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "incl/ping.h"
 
 static void			useage(void)
@@ -14,7 +26,8 @@ static void		set_option(t_mgr *mgr, char opt, char **av, int *i)
 		mgr->flags.count = TRUE;
 		if (!av[*i + 1] || (mgr->count = (size_t)ft_atoi(av[*i + 1])) == 0)
 		{
-			dprintf(STDERR_FILENO, "ping: invalid count of packets to transmit.\n");
+			dprintf(STDERR_FILENO, "ping: invalid count of packets"
+					" to transmit.\n");
 			useage();
 		}
 		*i += 1;
@@ -32,7 +45,7 @@ static void		set_option(t_mgr *mgr, char opt, char **av, int *i)
 
 static int		parse_arguments(t_mgr *mgr, int ac, char **av)
 {
-	int 		i;
+	int			i;
 
 	i = 0;
 	while (av[++i])
@@ -41,7 +54,8 @@ static int		parse_arguments(t_mgr *mgr, int ac, char **av)
 		{
 			if (ft_domtoip(av[i], mgr->daddr) == FAILURE)
 			{
-				dprintf(STDERR_FILENO, "ping: cannot resolve %s: Unknown host\n", av[i]);
+				dprintf(STDERR_FILENO, "ping: cannot resolve"
+						" %s: Unknown host\n", av[i]);
 				exit(FAILURE);
 			}
 		}
@@ -62,7 +76,8 @@ int				main(int ac, char **av)
 	init_mgr(mgr);
 	if (ft_gethstaddr(mgr->saddr) == FAILURE)
 	{
-		dprintf(STDERR_FILENO, "ping: could not find suitable IP for localhost\n");
+		dprintf(STDERR_FILENO, "ping: could not find suitable"
+				" IP for localhost\n");
 		exit(FAILURE);
 	}
 	parse_arguments(mgr, ac, av);
