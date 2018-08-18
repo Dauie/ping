@@ -6,7 +6,7 @@
 /*   By: rlutt <rlutt@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/17 14:50:06 by rlutt             #+#    #+#             */
-/*   Updated: 2018/08/17 20:53:54 by rlutt            ###   ########.fr       */
+/*   Updated: 2018/08/17 20:58:12 by rlutt            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,9 @@ static int			parse_arguments(t_mgr *mgr, int ac, char **av)
 		else if (av[i][0] == '-' && av[i][1])
 			set_option(mgr, av[i][1], av, &i);
 	}
-	return (mgr->daddr[0] ? FAILURE : SUCCESS);
+	if (!mgr->daddr[0])
+		useage();
+	return (SUCCESS);
 }
 
 int					main(int ac, char **av)
