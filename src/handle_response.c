@@ -12,11 +12,6 @@
 
 #include "../incl/ping.h"
 
-long mabs(int n)
-{
-	return (n * ((2 * n + 1) % 2));
-}
-
 static void			update_minmaxavg(t_stats *stats, float ms)
 {
 	if (stats->min == 0)
@@ -30,7 +25,9 @@ static void			update_minmaxavg(t_stats *stats, float ms)
 	if (ms < stats->min)
 		stats->min = ms;
 	stats->avg = (stats->avg + ms) / 2;
-	stats->mdev = mabs((ms - stats->avg) / 2);
+	stats->mdev += (float)(ms - stats->avg) / 2.0f;
+	if (stats->mdev < 0)
+		stats->mdev *= -1;
 }
 
 int					handle_response(struct msghdr *resp, struct timeval *now,
