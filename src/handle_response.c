@@ -6,11 +6,16 @@
 /*   By: rlutt <rlutt@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/17 16:10:30 by rlutt             #+#    #+#             */
-/*   Updated: 2018/08/17 17:17:11 by rlutt            ###   ########.fr       */
+/*   Updated: 2018/08/17 17:33:45 by rlutt            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../incl/ping.h"
+
+long mabs(int n)
+{
+	return (n * ((2 * n + 1) % 2));
+}
 
 static void			update_minmaxavg(t_stats *stats, float ms)
 {
@@ -20,14 +25,12 @@ static void			update_minmaxavg(t_stats *stats, float ms)
 		stats->max = ms;
 	if (stats->avg == 0)
 		stats->avg = ms;
-	if (stats->mdev == 0)
-		stats->mdev = ms;
 	if (ms > stats->max)
 		stats->max = ms;
 	if (ms < stats->min)
 		stats->min = ms;
 	stats->avg = (stats->avg + ms) / 2;
-	stats->mdev = (stats->mdev + (ms - stats->avg));
+	stats->mdev = mabs((ms - stats->avg) / 2);
 }
 
 int					handle_response(struct msghdr *resp, struct timeval *now,
