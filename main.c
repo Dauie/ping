@@ -6,7 +6,7 @@
 /*   By: rlutt <rlutt@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/17 14:50:06 by rlutt             #+#    #+#             */
-/*   Updated: 2018/08/17 15:32:44 by rlutt            ###   ########.fr       */
+/*   Updated: 2018/08/17 20:53:54 by rlutt            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,8 +34,6 @@ static void			set_option(t_mgr *mgr, char opt, char **av, int *i)
 	}
 	else if (opt == 'v')
 		mgr->flags.verbose = TRUE;
-	else if (opt == 'h')
-		useage();
 	else
 	{
 		dprintf(STDERR_FILENO, "ping: invalid option -- %c\n", opt);
@@ -52,6 +50,8 @@ static int			parse_arguments(t_mgr *mgr, int ac, char **av)
 	{
 		if (av[i][0] != '-' || ac == 2)
 		{
+			if (av[i][1] == 'h')
+				useage();
 			if (ft_domtoip(av[i], mgr->daddr) == FAILURE)
 			{
 				dprintf(STDERR_FILENO, "ping: cannot resolve"
@@ -62,7 +62,7 @@ static int			parse_arguments(t_mgr *mgr, int ac, char **av)
 		else if (av[i][0] == '-' && av[i][1])
 			set_option(mgr, av[i][1], av, &i);
 	}
-	return (SUCCESS);
+	return (mgr->daddr[0] ? FAILURE : SUCCESS);
 }
 
 int					main(int ac, char **av)

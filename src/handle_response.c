@@ -6,7 +6,7 @@
 /*   By: rlutt <rlutt@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/17 16:10:30 by rlutt             #+#    #+#             */
-/*   Updated: 2018/08/17 17:33:45 by rlutt            ###   ########.fr       */
+/*   Updated: 2018/08/17 17:51:56 by rlutt            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ static void			update_minmaxavg(t_stats *stats, float ms)
 	if (ms < stats->min)
 		stats->min = ms;
 	stats->avg = (stats->avg + ms) / 2;
-	stats->mdev += (float)(ms - stats->avg) / 2.0f;
+	stats->mdev += (ms - stats->avg) / 2.0f;
 	if (stats->mdev < 0)
 		stats->mdev *= -1;
 }
