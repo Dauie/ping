@@ -19,7 +19,7 @@ void				print_stats(t_mgr *mgr)
 
 	packet_loss = get_percentage(mgr->stats.sent, mgr->stats.recvd);
 	duration = time_diff_ms(&mgr->stats.end, &mgr->stats.start);
-	printf("\n--- %s ping statistics ---\n", mgr->domain);
+	printf("\n--- %s ping statistics ---\n", mgr->daddr);
 	printf("%zu packets transmitted, %zu received,"
 				" %.2Lf%% packet loss, time %.0Lfms\n",
 		mgr->stats.sent, mgr->stats.recvd, packet_loss, duration);
