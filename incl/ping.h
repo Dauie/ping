@@ -6,7 +6,7 @@
 /*   By: rlutt <rlutt@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/17 14:48:08 by rlutt             #+#    #+#             */
-/*   Updated: 2018/08/17 14:48:08 by rlutt            ###   ########.fr       */
+/*   Updated: 2018/08/17 16:58:21 by rlutt            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,6 +72,7 @@ typedef struct			s_flags
 typedef struct			s_stats
 {
 	float				avg;
+	float				mdev;
 	float				max;
 	float				min;
 	size_t				recvd;
@@ -96,7 +97,7 @@ typedef struct			s_manager
 	t_flags				flags;
 }						t_mgr;
 
-typedef struct 			s_sigflg
+typedef struct			s_sigflg
 {
 	volatile int		timeoflg;
 	volatile int		exitflg;
@@ -106,6 +107,8 @@ t_sigflg				g_sigflgs;
 
 u_int16_t				checksum(void *data, size_t len);
 int						create_socket(t_mgr *mgr);
+int						handle_response(struct msghdr *resp,
+								struct timeval *now, t_mgr *mgr, ssize_t rbyte);
 void					init_icmp_header(t_mgr *mgr, struct icmp *icmp);
 void					init_ip_header(t_mgr *mgr, struct ip *ip, t_echo *echo);
 void					init_mgr(t_mgr *mgr);
@@ -118,7 +121,8 @@ int						setrecvtimeout(t_mgr *mgr, struct timeval *tout);
 void					sigalrm_handle_timeout(int sig);
 void					sigint_handle_exit(int sig);
 long double				time_diff_ms(struct timeval *then, struct timeval *now);
-long double				time_diff_sec(struct timeval *then, struct timeval *now);
+long double				time_diff_sec(struct timeval *then,
+										struct timeval *now);
 float					get_percentage(size_t a, size_t b);
 
 #endif

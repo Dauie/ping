@@ -6,13 +6,13 @@
 /*   By: rlutt <rlutt@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/17 14:49:04 by rlutt             #+#    #+#             */
-/*   Updated: 2018/08/17 14:49:04 by rlutt            ###   ########.fr       */
+/*   Updated: 2018/08/17 14:49:26 by rlutt            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../incl/ping.h"
 
-u_int16_t checksum(void *data, size_t len)
+u_int16_t		checksum(void *data, size_t len)
 {
 	u_int16_t	word;
 	u_int32_t	accum;

@@ -6,13 +6,13 @@
 /*   By: rlutt <rlutt@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/17 14:26:27 by rlutt             #+#    #+#             */
-/*   Updated: 2018/08/17 14:41:59 by rlutt            ###   ########.fr       */
+/*   Updated: 2018/08/17 16:03:05 by rlutt            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../incl/ping.h"
 
-void					print_stats(t_mgr *mgr)
+void				print_stats(t_mgr *mgr)
 {
 	long double packet_loss;
 	long double duration;
@@ -20,14 +20,14 @@ void					print_stats(t_mgr *mgr)
 	packet_loss = get_percentage(mgr->stats.sent, mgr->stats.recvd);
 	duration = time_diff_ms(&mgr->stats.end, &mgr->stats.start);
 	printf("\n--- %s ping statistics ---\n", mgr->domain);
-	printf("%zu packets transmitted, %zu received, %.2Lf%% packet loss, time %.0Lfms\n",
-		   mgr->stats.sent, mgr->stats.recvd, packet_loss, duration);
-	/*TODO: MDEV standard deviation or 'jitter'*/
-	printf("rtt min/avg/max/mdev = %.3f/%.3f/%.3f ms\n",
-		   mgr->stats.min, mgr->stats.avg, mgr->stats.max);
+	printf("%zu packets transmitted, %zu received,"
+				" %.2Lf%% packet loss, time %.0Lfms\n",
+		mgr->stats.sent, mgr->stats.recvd, packet_loss, duration);
+	printf("rtt min/avg/max/mdev = %.3f/%.3f/%.3f/%.3f ms\n",
+		mgr->stats.min, mgr->stats.avg, mgr->stats.max, mgr->stats.mdev);
 }
 
-int 				ping_loop(t_mgr *mgr, t_echo *echo)
+int					ping_loop(t_mgr *mgr, t_echo *echo)
 {
 	struct timeval	then;
 	struct timeval	now;
@@ -53,7 +53,7 @@ int 				ping_loop(t_mgr *mgr, t_echo *echo)
 	return (SUCCESS);
 }
 
-int						ping(t_mgr *mgr)
+int					ping(t_mgr *mgr)
 {
 	ft_strcpy(mgr->echo.data, "                !\"#$%&'()*+,-./01234567");
 	mgr->echo.datalen = (u_short)ft_strlen(mgr->echo.data);
@@ -62,7 +62,8 @@ int						ping(t_mgr *mgr)
 	init_sockaddr(&mgr->sin, &mgr->echo);
 	printf("PING %s (%s) %zu(%zu) bytes of data.\n",
 		mgr->domain, mgr->daddr, mgr->echo.datalen + sizeof(struct timeval),
-			IPV4_HDRLEN + ICMP_HDRLEN + mgr->echo.datalen + sizeof(struct timeval));
+			IPV4_HDRLEN + ICMP_HDRLEN +
+				mgr->echo.datalen + sizeof(struct timeval));
 	gettimeofday(&mgr->stats.start, NULL);
 	ping_loop(mgr, &mgr->echo);
 	gettimeofday(&mgr->stats.end, NULL);

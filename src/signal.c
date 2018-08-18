@@ -25,4 +25,3 @@ void	sigint_handle_exit(int sig)
 		return ;
 	g_sigflgs.exitflg = TRUE;
 }
-

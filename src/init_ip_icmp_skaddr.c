@@ -6,7 +6,7 @@
 /*   By: rlutt <rlutt@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/17 14:42:29 by rlutt             #+#    #+#             */
-/*   Updated: 2018/08/17 14:42:29 by rlutt            ###   ########.fr       */
+/*   Updated: 2018/08/17 14:49:26 by rlutt            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ void		init_ip_header(t_mgr *mgr, struct ip *ip, t_echo *echo)
 	ip->ip_v = 4;
 	ip->ip_tos = 0;
 	ip->ip_len = htons(IPV4_HDRLEN + ICMP_HDRLEN + sizeof(echo->time) +
-					   echo->datalen);
+					echo->datalen);
 	ip->ip_id = htons(0);
 	ip->ip_off = htons(0);
 	ip->ip_ttl = 64;

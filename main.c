@@ -6,7 +6,7 @@
 /*   By: rlutt <rlutt@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/17 14:50:06 by rlutt             #+#    #+#             */
-/*   Updated: 2018/08/17 14:50:06 by rlutt            ###   ########.fr       */
+/*   Updated: 2018/08/17 15:32:44 by rlutt            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ static void			useage(void)
 	exit(SUCCESS);
 }
 
-static void		set_option(t_mgr *mgr, char opt, char **av, int *i)
+static void			set_option(t_mgr *mgr, char opt, char **av, int *i)
 {
 	if (opt == 'c')
 	{
@@ -43,9 +43,9 @@ static void		set_option(t_mgr *mgr, char opt, char **av, int *i)
 	}
 }
 
-static int		parse_arguments(t_mgr *mgr, int ac, char **av)
+static int			parse_arguments(t_mgr *mgr, int ac, char **av)
 {
-	int			i;
+	int				i;
 
 	i = 0;
 	while (av[++i])
@@ -60,14 +60,14 @@ static int		parse_arguments(t_mgr *mgr, int ac, char **av)
 			}
 		}
 		else if (av[i][0] == '-' && av[i][1])
-			set_option(mgr, av[i][1], av,  &i);
+			set_option(mgr, av[i][1], av, &i);
 	}
 	return (SUCCESS);
 }
 
-int				main(int ac, char **av)
+int					main(int ac, char **av)
 {
-	t_mgr		*mgr;
+	t_mgr			*mgr;
 
 	if (ac == 1)
 		useage();

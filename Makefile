@@ -17,6 +17,7 @@ MAIN = main.c
 
 SRCFILES =  checksum.c init_ip_icmp_skaddr.c ping.c recv_ping.c send_ping.c
 SRCFILES += signal.c socket.c struct_init.c timediff_percentage.c
+SRCFILES += handle_response.c
 
 SRC = $(addprefix $(SRCDIR)/, $(SRCFILES))
 

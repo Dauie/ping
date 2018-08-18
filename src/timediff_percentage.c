@@ -6,7 +6,7 @@
 /*   By: rlutt <rlutt@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/17 14:36:16 by rlutt             #+#    #+#             */
-/*   Updated: 2018/08/17 14:36:16 by rlutt            ###   ########.fr       */
+/*   Updated: 2018/08/17 16:54:33 by rlutt            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,11 @@
 
 long double			time_diff_ms(struct timeval *then, struct timeval *now)
 {
-	long double x =
-			(double)(then->tv_usec - now->tv_usec) / 1000.0L +
+	long double x;
+
+	x = (double)(then->tv_usec - now->tv_usec) / 1000.0L +
 			(double)(then->tv_sec - now->tv_sec) * 1000.0L;
-	return x;
+	return (x);
 }
 
 long double			time_diff_sec(struct timeval *then, struct timeval *now)
@@ -28,7 +29,7 @@ long double			time_diff_sec(struct timeval *then, struct timeval *now)
 
 float				get_percentage(size_t a, size_t b)
 {
-	size_t 			diff;
+	size_t			diff;
 
 	diff = a - b;
 	if (diff == 0)
