@@ -1,5 +1,1 @@
-CMakeLists.txt
-cmake-build-debug/
-a.out
-*.dSYM
-cheesburgers
+CMake*
