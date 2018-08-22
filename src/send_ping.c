@@ -40,7 +40,7 @@ int						send_ping(t_mgr *mgr, t_echo *echo)
 	ft_memset(packet, 0, IP_MAXPACKET);
 	fill_packet(packet, echo);
 	pktlen = IPV4_HDRLEN + ICMP_HDRLEN + sizeof(echo->time) + echo->datalen;
-	if (sendto(mgr->sock, packet, pktlen, 0, (struct sockaddr *)&mgr->sin,
+	if (sendto(mgr->sock, packet, pktlen, 0, (struct sockaddr *)&mgr->daddr,
 			sizeof(struct sockaddr)) < 0)
 	{
 		dprintf(STDERR_FILENO, "Error sendto(). %s\n", strerror(errno));

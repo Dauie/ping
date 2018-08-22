@@ -31,16 +31,8 @@ void		init_ip_header(t_mgr *mgr, struct ip *ip, t_echo *echo)
 	ip->ip_off = htons(0);
 	ip->ip_ttl = 64;
 	ip->ip_p = IPPROTO_ICMP;
-	if (inet_pton(AF_INET, mgr->saddr, &(ip->ip_src.s_addr)) <= 0)
-	{
-		dprintf(STDERR_FILENO, "Error inet_pton() 1. %s\n", strerror(errno));
-		exit(FAILURE);
-	}
-	if (inet_pton(AF_INET, mgr->daddr, &(ip->ip_dst.s_addr)) <= 0)
-	{
-		dprintf(STDERR_FILENO, "Error inet_pton() 2. %s\n", strerror(errno));
-		exit(FAILURE);
-	}
+	ip->ip_src = mgr->saddr.sin_addr;
+	ip->ip_dst = mgr->daddr.sin_addr;
 }
 
 void		init_sockaddr(struct sockaddr_in *sin, t_echo *echo)

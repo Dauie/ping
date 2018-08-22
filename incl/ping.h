@@ -6,7 +6,7 @@
 /*   By: rlutt <rlutt@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/17 14:48:08 by rlutt             #+#    #+#             */
-/*   Updated: 2018/08/17 16:58:21 by rlutt            ###   ########.fr       */
+/*   Updated: 2018/08/22 15:09:20 by rlutt            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,11 +88,10 @@ typedef struct			s_manager
 	int					sock;
 	size_t				count;
 	size_t				seq;
-	struct sockaddr_in	sin;
 	t_echo				echo;
 	char				domain[DOMAIN_NAME_LEN];
-	char				daddr[INET_ADDRSTRLEN];
-	char				saddr[INET_ADDRSTRLEN];
+	struct sockaddr_in	daddr;
+	struct sockaddr_in	saddr;
 	t_stats				stats;
 	t_flags				flags;
 }						t_mgr;

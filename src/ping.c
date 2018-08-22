@@ -6,7 +6,7 @@
 /*   By: rlutt <rlutt@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/17 14:26:27 by rlutt             #+#    #+#             */
-/*   Updated: 2018/08/17 16:03:05 by rlutt            ###   ########.fr       */
+/*   Updated: 2018/08/22 15:11:11 by rlutt            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ void				print_stats(t_mgr *mgr)
 
 	packet_loss = get_percentage(mgr->stats.sent, mgr->stats.recvd);
 	duration = time_diff_ms(&mgr->stats.end, &mgr->stats.start);
-	printf("\n--- %s ping statistics ---\n", mgr->daddr);
+	printf("\n--- %s ping statistics ---\n", mgr->domain);
 	printf("%zu packets transmitted, %zu received,"
 				" %.2Lf%% packet loss, time %.0Lfms\n",
 		mgr->stats.sent, mgr->stats.recvd, packet_loss, duration);
@@ -27,7 +27,7 @@ void				print_stats(t_mgr *mgr)
 		mgr->stats.min, mgr->stats.avg, mgr->stats.max, mgr->stats.mdev);
 }
 
-static int			ping_loop(t_mgr *mgr, t_echo *echo)
+int					ping_loop(t_mgr *mgr, t_echo *echo)
 {
 	struct timeval	then;
 	struct timeval	now;
@@ -59,9 +59,9 @@ int					ping(t_mgr *mgr)
 	mgr->echo.datalen = (u_short)ft_strlen(mgr->echo.data);
 	init_ip_header(mgr, &mgr->echo.ip, &mgr->echo);
 	init_icmp_header(mgr, &mgr->echo.icmp);
-	init_sockaddr(&mgr->sin, &mgr->echo);
+	init_sockaddr(&mgr->daddr, &mgr->echo);
 	printf("PING %s (%s) %zu(%zu) bytes of data.\n",
-		mgr->domain, mgr->daddr, mgr->echo.datalen + sizeof(struct timeval),
+		mgr->domain, inet_ntoa(mgr->daddr.sin_addr), mgr->echo.datalen + sizeof(struct timeval),
 			IPV4_HDRLEN + ICMP_HDRLEN +
 				mgr->echo.datalen + sizeof(struct timeval));
 	gettimeofday(&mgr->stats.start, NULL);

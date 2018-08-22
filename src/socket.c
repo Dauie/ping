@@ -6,7 +6,7 @@
 /*   By: rlutt <rlutt@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/17 14:49:33 by rlutt             #+#    #+#             */
-/*   Updated: 2018/08/22 13:02:00 by rlutt            ###   ########.fr       */
+/*   Updated: 2018/08/22 13:06:34 by rlutt            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,8 +44,8 @@ int					setopt(t_mgr *mgr)
 		dprintf(STDERR_FILENO, "Error setsockopt()\n");
 		exit(FAILURE);
 	}
-	setsendtimeout(mgr, &{0, 1000});
-	setrecvtimeout(mgr, &{0, 1000});
+	setsendtimeout(mgr, &(struct timeval){0, 1000});
+	setrecvtimeout(mgr, &(struct timeval){0, 1000});
 	return (SUCCESS);
 }
 
