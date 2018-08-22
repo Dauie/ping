@@ -103,7 +103,7 @@ typedef struct			s_sigflg
 	volatile int		exitflg;
 }						t_sigflg;
 
-t_sigflg				g_sigflgs;
+extern t_sigflg			g_sigflgs;
 
 u_int16_t				checksum(void *data, size_t len);
 int						create_socket(t_mgr *mgr);

@@ -56,7 +56,7 @@ void					recv_ping(t_mgr *mgr, struct timeval *now)
 	ssize_t				rbyte;
 
 	resp = init_msghdr();
-	if ((rbyte = recvmsg(mgr->sock, resp, MSG_DONTWAIT)) < 0)
+	if ((rbyte = recvmsg(mgr->sock, resp, MSG_DONTWAIT)) <= 0)
 	{
 		if (errno == EAGAIN || errno == EWOULDBLOCK)
 		{

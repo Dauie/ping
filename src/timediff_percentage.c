@@ -14,10 +14,10 @@
 
 long double			time_diff_ms(struct timeval *then, struct timeval *now)
 {
-	long double x;
+	long double		x;
 
 	x = (double)(then->tv_usec - now->tv_usec) / 1000.0L +
-			(double)(then->tv_sec - now->tv_sec) * 1000.0L;
+		(double)(then->tv_sec - now->tv_sec) * 1000.0L;
 	return (x);
 }
 

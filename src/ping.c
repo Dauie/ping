@@ -14,8 +14,8 @@
 
 void				print_stats(t_mgr *mgr)
 {
-	long double packet_loss;
-	long double duration;
+	long double		packet_loss;
+	long double		duration;
 
 	packet_loss = get_percentage(mgr->stats.sent, mgr->stats.recvd);
 	duration = time_diff_ms(&mgr->stats.end, &mgr->stats.start);
@@ -27,7 +27,7 @@ void				print_stats(t_mgr *mgr)
 		mgr->stats.min, mgr->stats.avg, mgr->stats.max, mgr->stats.mdev);
 }
 
-int					ping_loop(t_mgr *mgr, t_echo *echo)
+static int			ping_loop(t_mgr *mgr, t_echo *echo)
 {
 	struct timeval	then;
 	struct timeval	now;

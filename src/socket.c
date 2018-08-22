@@ -6,7 +6,7 @@
 /*   By: rlutt <rlutt@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/17 14:49:33 by rlutt             #+#    #+#             */
-/*   Updated: 2018/08/17 15:34:47 by rlutt            ###   ########.fr       */
+/*   Updated: 2018/08/22 13:02:00 by rlutt            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,18 +37,15 @@ int					setsendtimeout(t_mgr *mgr, struct timeval *tout)
 int					setopt(t_mgr *mgr)
 {
 	int				on;
-	struct timeval	tout;
 
 	on = 1;
-	tout.tv_sec = 0;
-	tout.tv_usec = 1000;
 	if (setsockopt(mgr->sock, IPPROTO_IP, IP_HDRINCL, &on, sizeof(on)) < 0)
 	{
 		dprintf(STDERR_FILENO, "Error setsockopt()\n");
 		exit(FAILURE);
 	}
-	setsendtimeout(mgr, &tout);
-	setrecvtimeout(mgr, &tout);
+	setsendtimeout(mgr, &{0, 1000});
+	setrecvtimeout(mgr, &{0, 1000});
 	return (SUCCESS);
 }
 

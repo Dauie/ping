@@ -45,7 +45,6 @@ void		init_ip_header(t_mgr *mgr, struct ip *ip, t_echo *echo)
 
 void		init_sockaddr(struct sockaddr_in *sin, t_echo *echo)
 {
-	ft_memset(sin, 0, sizeof(struct sockaddr_in));
 	sin->sin_family = AF_INET;
 	sin->sin_addr.s_addr = echo->ip.ip_dst.s_addr;
 }
