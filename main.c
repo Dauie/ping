@@ -60,7 +60,7 @@ static int				parse_arguments(t_mgr *mgr, int ac, char **av)
 						" %s: Unknown host\n", av[i]);
 				exit(FAILURE);
 			}
-			ft_strcpy(mgr->domain, inet_ntoa(mgr->daddr.sin_addr));
+			ft_strcpy(mgr->domain, av[i]);
 		}
 		else if (av[i][0] == '-' && av[i][1])
 			set_option(mgr, av[i][1], av, &i);
