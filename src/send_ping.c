@@ -6,7 +6,7 @@
 /*   By: rlutt <rlutt@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/17 14:26:36 by rlutt             #+#    #+#             */
-/*   Updated: 2018/08/17 16:09:42 by rlutt            ###   ########.fr       */
+/*   Updated: 2018/08/22 15:01:51 by rlutt            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ int						send_ping(t_mgr *mgr, t_echo *echo)
 	if (sendto(mgr->sock, packet, pktlen, 0, (struct sockaddr *)&mgr->daddr,
 			sizeof(struct sockaddr)) < 0)
 	{
-		dprintf(STDERR_FILENO, "Error sendto(). %s\n", strerror(errno));
+		dprintf(STDERR_FILENO, "Error sendto().\n");
 		exit(FAILURE);
 	}
 	return (SUCCESS);

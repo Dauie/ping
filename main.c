@@ -6,7 +6,7 @@
 /*   By: rlutt <rlutt@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/17 14:50:06 by rlutt             #+#    #+#             */
-/*   Updated: 2018/08/22 15:08:40 by rlutt            ###   ########.fr       */
+/*   Updated: 2018/08/22 15:17:18 by rlutt            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,13 +54,13 @@ static int				parse_arguments(t_mgr *mgr, int ac, char **av)
 		{
 			if (av[i][1] == 'h')
 				useage();
-			if (!(mgr->daddr.sin_addr.s_addr =
-						 ft_domtoip(av[i], mgr->domain, TRUE)))
+			if (!(mgr->daddr.sin_addr.s_addr = ft_domtoip(av[i], NULL, FALSE)))
 			{
 				dprintf(STDERR_FILENO, "ping: cannot resolve"
 						" %s: Unknown host\n", av[i]);
 				exit(FAILURE);
 			}
+			ft_strcpy(mgr->domain, inet_ntoa(mgr->daddr.sin_addr));
 		}
 		else if (av[i][0] == '-' && av[i][1])
 			set_option(mgr, av[i][1], av, &i);

@@ -6,7 +6,7 @@
 /*   By: rlutt <rlutt@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/17 14:31:59 by rlutt             #+#    #+#             */
-/*   Updated: 2018/08/17 16:45:16 by rlutt            ###   ########.fr       */
+/*   Updated: 2018/08/22 13:18:57 by rlutt            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,7 @@ void					recv_ping(t_mgr *mgr, struct timeval *now)
 			clean_msghdr(&resp);
 			return ;
 		}
-		dprintf(STDERR_FILENO, "Error recvmsg().%s\n", strerror(errno));
+		dprintf(STDERR_FILENO, "Error recvmsg().\n");
 		exit(FAILURE);
 	}
 	else

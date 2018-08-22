@@ -6,7 +6,7 @@
 /*   By: rlutt <rlutt@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/17 14:26:27 by rlutt             #+#    #+#             */
-/*   Updated: 2018/08/22 15:11:11 by rlutt            ###   ########.fr       */
+/*   Updated: 2018/08/22 15:26:13 by rlutt            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,8 @@ int					ping(t_mgr *mgr)
 	init_icmp_header(mgr, &mgr->echo.icmp);
 	init_sockaddr(&mgr->daddr, &mgr->echo);
 	printf("PING %s (%s) %zu(%zu) bytes of data.\n",
-		mgr->domain, inet_ntoa(mgr->daddr.sin_addr), mgr->echo.datalen + sizeof(struct timeval),
+		mgr->domain, inet_ntoa(mgr->daddr.sin_addr), mgr->echo.datalen +
+				sizeof(struct timeval),
 			IPV4_HDRLEN + ICMP_HDRLEN +
 				mgr->echo.datalen + sizeof(struct timeval));
 	gettimeofday(&mgr->stats.start, NULL);

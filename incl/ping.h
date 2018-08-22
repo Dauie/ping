@@ -6,7 +6,7 @@
 /*   By: rlutt <rlutt@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/17 14:48:08 by rlutt             #+#    #+#             */
-/*   Updated: 2018/08/22 15:09:20 by rlutt            ###   ########.fr       */
+/*   Updated: 2018/08/22 15:54:01 by rlutt            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,16 +35,16 @@
 # include "../libft/incl/bool.h"
 # include "../libft/incl/cnvrsn.h"
 
-/**
-* Flags Supported:
-*
-* -c Stop after sending (and receiving) count ECHO_RESPONSE packets.
-*
-* -v Verbose output. ICMP packets other than ECHO_RESPONSE that are
-*    received are listed.
-*
-* -h Show help.
-**/
+/*
+** Flags Supported:
+**
+** -c Stop after sending (and receiving) count ECHO_RESPONSE packets.
+**
+** -v Verbose output. ICMP packets other than ECHO_RESPONSE that are
+**    received are listed.
+**
+** -h Show help.
+*/
 
 typedef enum			e_msg_types
 {
