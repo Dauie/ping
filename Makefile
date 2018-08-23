@@ -5,7 +5,7 @@ CC = gcc
 
 SRCDIR = src
 
-CFLAGS  = -Wall -Werror -Wextra -g
+CFLAGS  = -Wall -Werror -Wextra
 
 INCL = -I incl
 
@@ -28,10 +28,9 @@ $(NAME):
 		$(CC) $(CFLAGS) $(INCL) $(MAIN) $(SRC) $(LIBFT) -o $(NAME)
 
 clean:
-		$(RM) $(OBJDIR)
+		$(RM) $(NAME)
 
 fclean: clean
-		$(RM) $(NAME)
-		$(RM) libft_malloc.so
+		make fclean -C libft
 
 re: fclean $(NAME)
