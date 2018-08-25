@@ -54,7 +54,7 @@ static int				parse_arguments(t_mgr *mgr, int ac, char **av)
 		{
 			if (av[i][1] == 'h')
 				useage();
-			if (!(mgr->daddr.sin_addr.s_addr = ft_domtoip(av[i], NULL, FALSE)))
+			if (!(mgr->daddr.sin_addr.s_addr = ft_domtoip(av[i], NULL)))
 			{
 				dprintf(STDERR_FILENO, "ping: cannot resolve"
 						" %s: Unknown host\n", av[i]);
