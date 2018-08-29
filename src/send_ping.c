@@ -6,40 +6,42 @@
 /*   By: rlutt <rlutt@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/17 14:26:36 by rlutt             #+#    #+#             */
-/*   Updated: 2018/08/22 15:01:51 by rlutt            ###   ########.fr       */
+/*   Updated: 2018/08/29 14:28:50 by rlutt            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../incl/ping.h"
 
-static u_int16_t		update_checksum(t_echo *echo, u_int8_t *packet)
+static u_int16_t		update_checksum(t_echopkt *echo, u_int8_t *packet)
 {
-	return (checksum((packet + IPV4_HDRLEN),
-					(ICMP_HDRLEN + sizeof(echo->time) + echo->datalen)));
+	return (ft_checksum((packet + IPV4_HDRLEN),
+						(ICMP_HDRLEN + echo->datalen), TRUE));
 }
 
-static void				fill_packet(u_int8_t *packet, t_echo *echo)
+static void				fill_packet(u_int8_t *packet, t_echopkt *echo)
 {
-	echo->icmp.icmp_cksum = 0;
-	ft_memcpy(packet, &echo->ip, IPV4_HDRLEN);
-	ft_memcpy((packet + IPV4_HDRLEN), &echo->icmp, ICMP_HDRLEN);
-	gettimeofday(&echo->time, NULL);
-	ft_memcpy((packet + IPV4_HDRLEN + ICMP_HDRLEN),
-			&echo->time, sizeof(echo->time));
-	ft_memcpy((packet + IPV4_HDRLEN + ICMP_HDRLEN + sizeof(echo->time)),
-			echo->data, echo->datalen);
-	echo->icmp.icmp_cksum = update_checksum(echo, packet);
-	ft_memcpy(packet + IPV4_HDRLEN, &echo->icmp, ICMP_HDRLEN);
+	echo->phdr.icmp.icmp_cksum = 0;
+	ft_memcpy(packet, &echo->iphdr, IPV4_HDRLEN);
+	packet += IPV4_HDRLEN;
+	ft_memcpy(packet, &echo->phdr.icmp, ICMP_HDRLEN);
+	packet += ICMP_HDRLEN;
+	gettimeofday(&echo->sent, NULL);
+	ft_memcpy(packet, &echo->sent, sizeof(struct timeval));
+	packet += sizeof(struct timeval);
+	ft_memcpy(packet, echo->data, echo->datalen);
+	echo->phdr.icmp.icmp_cksum = update_checksum(echo, packet);
+	packet -= sizeof(struct timeval) + ICMP_HDRLEN;
+	ft_memcpy(packet, &echo->phdr.icmp, ICMP_HDRLEN);
 }
 
-int						send_ping(t_mgr *mgr, t_echo *echo)
+int						send_ping(t_mgr *mgr, t_echopkt *echo)
 {
 	u_int8_t			packet[IP_MAXPACKET];
 	size_t				pktlen;
 
 	ft_memset(packet, 0, IP_MAXPACKET);
 	fill_packet(packet, echo);
-	pktlen = IPV4_HDRLEN + ICMP_HDRLEN + sizeof(echo->time) + echo->datalen;
+	pktlen = IPV4_HDRLEN + ICMP_HDRLEN + echo->datalen;
 	if (sendto(mgr->sock, packet, pktlen, 0, (struct sockaddr *)&mgr->daddr,
 			sizeof(struct sockaddr)) < 0)
 	{

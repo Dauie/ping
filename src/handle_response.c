@@ -6,7 +6,7 @@
 /*   By: rlutt <rlutt@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/17 16:10:30 by rlutt             #+#    #+#             */
-/*   Updated: 2018/08/17 17:51:56 by rlutt            ###   ########.fr       */
+/*   Updated: 2018/08/29 13:55:21 by rlutt            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,21 +40,21 @@ int					handle_response(struct msghdr *resp, struct timeval *now,
 	u_short			seq;
 
 	icmp = (struct icmp *)&((u_int8_t *)resp->msg_control)[IPV4_HDRLEN];
-	ms = (float)time_diff_ms(now, (struct timeval *)&((u_int8_t *)
+	ms = (float)ft_timediff_ms(now, (struct timeval *)&((u_int8_t *)
 			resp->msg_control)[IPV4_HDRLEN + ICMP_HDRLEN]);
 	update_minmaxavg(&mgr->stats, ms);
 	seq = ntohs((u_short)((struct icmp *)&((u_int8_t *)
 			resp->msg_control)[IPV4_HDRLEN])->icmp_hun.ih_idseq.icd_seq);
 	src = &((struct ip *)resp->msg_control)->ip_src;
 	inet_ntop(AF_INET, src, addr, INET_ADDRSTRLEN);
-	if (icmp->icmp_type == TYPE_ECHO_RPLY)
+	if (icmp->icmp_type == ICMP_ECHOREPLY)
 		printf("%zu bytes from %s: icmp_seq=%u ttl=%i time=%.2f ms\n",
 			rbyte, addr, seq, ((struct ip *)resp->msg_control)->ip_ttl, ms);
-	else if (icmp->icmp_type == TYPE_DST_UNRCH && mgr->flags.verbose == TRUE)
+	else if (icmp->icmp_type == ICMP_UNREACH && mgr->flags.verbose == TRUE)
 		printf("From %s icmp_seq=%u Destination Host Unreachable\n", addr, seq);
-	else if (icmp->icmp_type == TYPE_TIME_EXCD && mgr->flags.verbose == TRUE)
+	else if (icmp->icmp_type == ICMP_TIMXCEED && mgr->flags.verbose == TRUE)
 		printf("From %s icmp_seq=%u Time to live exceeded\n", addr, seq);
-	else if (icmp->icmp_type == TYPE_PARAM_PRBLM && mgr->flags.verbose == TRUE)
+	else if (icmp->icmp_type == ICMP_PARAMPROB && mgr->flags.verbose == TRUE)
 		printf("From %s icmp_seq=%u Parameter problem.\n", addr, seq);
 	return (SUCCESS);
 }

@@ -1,11 +1,11 @@
 
-NAME = ft_ping
+NAME = ping
 
 CC = gcc
 
 SRCDIR = src
 
-CFLAGS  = -Wall -Werror -Wextra -g
+CFLAGS  = -Wall -Werror -Wextra
 
 INCL = -I incl
 
@@ -15,9 +15,7 @@ LIBFT = ./libft/libftprintf.a
 
 MAIN = main.c
 
-SRCFILES =  checksum.c init_ip_icmp_skaddr.c ping.c recv_ping.c send_ping.c
-SRCFILES += signal.c socket.c struct_init.c timediff_percentage.c
-SRCFILES += handle_response.c
+SRCFILES =  ping.c recv_ping.c send_ping.c signal.c handle_response.c
 
 SRC = $(addprefix $(SRCDIR)/, $(SRCFILES))
 
@@ -28,9 +26,9 @@ $(NAME):
 		$(CC) $(CFLAGS) $(INCL) $(MAIN) $(SRC) $(LIBFT) -o $(NAME)
 
 clean:
-		$(RM) $(OBJDIR)
+		$(RM) $(NAME)
 
 fclean: clean
-		$(RM) $(NAME)
+		make fclean -C libft
 
 re: fclean $(NAME)

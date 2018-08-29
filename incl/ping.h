@@ -6,7 +6,7 @@
 /*   By: rlutt <rlutt@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/17 14:48:08 by rlutt             #+#    #+#             */
-/*   Updated: 2018/08/22 15:54:01 by rlutt            ###   ########.fr       */
+/*   Updated: 2018/08/29 14:53:31 by rlutt            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@
 # include <netinet/ip_icmp.h>
 # include <ifaddrs.h>
 
-# include "../libft/incl/net.h"
+# include "../libft/incl/net_ping.h"
 # include "../libft/incl/return_types.h"
 # include "../libft/incl/bool.h"
 # include "../libft/incl/cnvrsn.h"
@@ -45,23 +45,6 @@
 **
 ** -h Show help.
 */
-
-typedef enum			e_msg_types
-{
-	TYPE_ECHO_RPLY = 0,
-	TYPE_DST_UNRCH = 3,
-	TYPE_TIME_EXCD = 11,
-	TYPE_PARAM_PRBLM = 12,
-}						t_msg_types;
-
-typedef struct			s_echo
-{
-	struct ip			ip;
-	struct icmp			icmp;
-	struct timeval		time;
-	char				data[256];
-	u_short				datalen;
-}						t_echo;
 
 typedef struct			s_flags
 {
@@ -88,7 +71,7 @@ typedef struct			s_manager
 	int					sock;
 	size_t				count;
 	size_t				seq;
-	t_echo				echo;
+	t_echopkt			echo;
 	char				domain[DOMAIN_NAME_LEN];
 	struct sockaddr_in	daddr;
 	struct sockaddr_in	saddr;
@@ -104,24 +87,12 @@ typedef struct			s_sigflg
 
 extern t_sigflg			g_sigflgs;
 
-u_int16_t				checksum(void *data, size_t len);
-int						create_socket(t_mgr *mgr);
 int						handle_response(struct msghdr *resp,
 								struct timeval *now, t_mgr *mgr, ssize_t rbyte);
-void					init_icmp_header(t_mgr *mgr, struct icmp *icmp);
-void					init_ip_header(t_mgr *mgr, struct ip *ip, t_echo *echo);
-void					init_mgr(t_mgr *mgr);
-void					init_sockaddr(struct sockaddr_in *sin, t_echo *echo);
 int						ping(t_mgr *mgr);
-int						ping_loop(t_mgr *mgr, t_echo *echo);
 void					recv_ping(t_mgr *mgr, struct timeval *now);
-int						send_ping(t_mgr *mgr, t_echo *echo);
-int						setrecvtimeout(t_mgr *mgr, struct timeval *tout);
+int						send_ping(t_mgr *mgr, t_echopkt *echo);
 void					sigalrm_handle_timeout(int sig);
 void					sigint_handle_exit(int sig);
-long double				time_diff_ms(struct timeval *then, struct timeval *now);
-long double				time_diff_sec(struct timeval *then,
-										struct timeval *now);
-float					get_percentage(size_t a, size_t b);
 
 #endif
