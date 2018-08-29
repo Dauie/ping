@@ -65,10 +65,10 @@ int					ping(t_mgr *mgr)
 	mgr->echo.datalen = (u_short)ft_strlen((char *)mgr->echo.data) + sizeof(struct timeval);
 	ft_setip_hdr(&mgr->echo.iphdr, 64, IPPROTO_ICMP, mgr->echo.datalen);
 	ft_seticmp_hdr(&mgr->echo.phdr.icmp, ICMP_ECHO, (int)mgr->seq, mgr->pid);
+	ft_setip_dstsrc(&mgr->echo.iphdr, &mgr->saddr.sin_addr, &mgr->daddr.sin_addr);
 	init_sockaddr(&mgr->daddr, &mgr->echo);
-	printf("PING %s (%s) %zu(%zu) bytes of data.\n",
-		mgr->domain, inet_ntoa(mgr->daddr.sin_addr), mgr->echo.datalen +
-			sizeof(struct timeval), IPV4_HDRLEN + ICMP_HDRLEN +
+	printf("PING %s (%s) %u(%zu) bytes of data.\n",
+		mgr->domain, inet_ntoa(mgr->daddr.sin_addr), mgr->echo.datalen, IPV4_HDRLEN + ICMP_HDRLEN +
 				mgr->echo.datalen + sizeof(struct timeval));
 	gettimeofday(&mgr->stats.start, NULL);
 	ping_loop(mgr, &mgr->echo);

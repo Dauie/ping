@@ -12,12 +12,6 @@
 
 #include "../incl/ping.h"
 
-static u_int16_t		update_checksum(t_echopkt *echo, u_int8_t *packet)
-{
-	return (ft_checksum((packet + IPV4_HDRLEN),
-						(ICMP_HDRLEN + echo->datalen), TRUE));
-}
-
 static void				fill_packet(u_int8_t *packet, t_echopkt *echo)
 {
 	echo->phdr.icmp.icmp_cksum = 0;
@@ -28,9 +22,9 @@ static void				fill_packet(u_int8_t *packet, t_echopkt *echo)
 	gettimeofday(&echo->sent, NULL);
 	ft_memcpy(packet, &echo->sent, sizeof(struct timeval));
 	packet += sizeof(struct timeval);
-	ft_memcpy(packet, echo->data, echo->datalen);
-	echo->phdr.icmp.icmp_cksum = update_checksum(echo, packet);
+	ft_memcpy(packet, echo->data, echo->datalen - sizeof(struct timeval));
 	packet -= sizeof(struct timeval) + ICMP_HDRLEN;
+	echo->phdr.icmp.icmp_cksum = ft_checksum(packet, ICMP_HDRLEN + echo->datalen, TRUE);
 	ft_memcpy(packet, &echo->phdr.icmp, ICMP_HDRLEN);
 }
 
