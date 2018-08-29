@@ -6,7 +6,7 @@
 /*   By: rlutt <rlutt@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/17 14:26:27 by rlutt             #+#    #+#             */
-/*   Updated: 2018/08/22 19:41:14 by rlutt            ###   ########.fr       */
+/*   Updated: 2018/08/29 13:48:02 by rlutt            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,8 +17,8 @@ void				print_stats(t_mgr *mgr)
 	long double		packet_loss;
 	long double		duration;
 
-	packet_loss = get_percentage(mgr->stats.sent, mgr->stats.recvd);
-	duration = time_diff_ms(&mgr->stats.end, &mgr->stats.start);
+	packet_loss = ft_getpercent(mgr->stats.sent, mgr->stats.recvd);
+	duration = ft_timediff_ms(&mgr->stats.end, &mgr->stats.start);
 	printf("\n--- %s ping statistics ---\n", mgr->domain);
 	printf("%zu packets transmitted, %zu received,"
 				" %.2Lf%% packet loss, time %.0Lfms\n",
@@ -38,7 +38,7 @@ int					ping_loop(t_mgr *mgr, t_echo *echo)
 	while (mgr->count && g_sigflgs.exitflg == FALSE)
 	{
 		gettimeofday(&now, NULL);
-		if (time_diff_sec(&then, &now) > 1.0)
+		if (ft_timediff_sec(&then, &now) > 1.0)
 		{
 			send_ping(mgr, echo);
 			mgr->stats.sent++;

@@ -40,7 +40,7 @@ int					handle_response(struct msghdr *resp, struct timeval *now,
 	u_short			seq;
 
 	icmp = (struct icmp *)&((u_int8_t *)resp->msg_control)[IPV4_HDRLEN];
-	ms = (float)time_diff_ms(now, (struct timeval *)&((u_int8_t *)
+	ms = (float)ft_timediff_ms(now, (struct timeval *)&((u_int8_t *)
 			resp->msg_control)[IPV4_HDRLEN + ICMP_HDRLEN]);
 	update_minmaxavg(&mgr->stats, ms);
 	seq = ntohs((u_short)((struct icmp *)&((u_int8_t *)

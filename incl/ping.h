@@ -119,9 +119,5 @@ int						send_ping(t_mgr *mgr, t_echo *echo);
 int						setrecvtimeout(t_mgr *mgr, struct timeval *tout);
 void					sigalrm_handle_timeout(int sig);
 void					sigint_handle_exit(int sig);
-long double				time_diff_ms(struct timeval *then, struct timeval *now);
-long double				time_diff_sec(struct timeval *then,
-										struct timeval *now);
-float					get_percentage(size_t a, size_t b);
 
 #endif
