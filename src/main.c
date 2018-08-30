@@ -6,11 +6,11 @@
 /*   By: rlutt <rlutt@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/17 14:50:06 by rlutt             #+#    #+#             */
-/*   Updated: 2018/08/29 16:49:52 by rlutt            ###   ########.fr       */
+/*   Updated: 2018/08/29 20:52:49 by rlutt            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "incl/ping.h"
+#include "../incl/ping.h"
 
 t_sigflg				g_sigflgs;
 
