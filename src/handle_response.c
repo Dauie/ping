@@ -6,7 +6,7 @@
 /*   By: rlutt <rlutt@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/17 16:10:30 by rlutt             #+#    #+#             */
-/*   Updated: 2018/08/29 13:55:21 by rlutt            ###   ########.fr       */
+/*   Updated: 2018/08/29 14:21:50 by rlutt            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ int					handle_response(struct msghdr *resp, struct timeval *now,
 	inet_ntop(AF_INET, src, addr, INET_ADDRSTRLEN);
 	if (icmp->icmp_type == ICMP_ECHOREPLY)
 		printf("%zu bytes from %s: icmp_seq=%u ttl=%i time=%.2f ms\n",
-			rbyte, addr, seq, ((struct ip *)resp->msg_control)->ip_ttl, ms);
+			rbyte - IPV4_HDRLEN, addr, seq, ((struct ip *)resp->msg_control)->ip_ttl, ms);
 	else if (icmp->icmp_type == ICMP_UNREACH && mgr->flags.verbose == TRUE)
 		printf("From %s icmp_seq=%u Destination Host Unreachable\n", addr, seq);
 	else if (icmp->icmp_type == ICMP_TIMXCEED && mgr->flags.verbose == TRUE)
