@@ -6,7 +6,7 @@
 /*   By: rlutt <rlutt@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/17 14:26:27 by rlutt             #+#    #+#             */
-/*   Updated: 2018/08/29 16:49:52 by rlutt            ###   ########.fr       */
+/*   Updated: 2018/08/29 18:27:15 by rlutt            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,9 +67,8 @@ int					ping(t_mgr *mgr)
 	ft_seticmp_hdr(&mgr->echo.phdr.icmp, ICMP_ECHO, (int)mgr->seq, mgr->pid);
 	ft_setip_dstsrc(&mgr->echo.iphdr, &mgr->saddr.sin_addr, &mgr->daddr.sin_addr);
 	init_sockaddr(&mgr->daddr, &mgr->echo);
-	printf("PING %s (%s) %u(%zu) bytes of data.\n",
-		mgr->domain, inet_ntoa(mgr->daddr.sin_addr), mgr->echo.datalen, IPV4_HDRLEN + ICMP_HDRLEN +
-				mgr->echo.datalen + sizeof(struct timeval));
+	printf("PING %s (%s) %u(%d) bytes of data.\n",
+		mgr->domain, inet_ntoa(mgr->daddr.sin_addr), mgr->echo.datalen, ICMP_HDRLEN + mgr->echo.datalen);
 	gettimeofday(&mgr->stats.start, NULL);
 	ping_loop(mgr, &mgr->echo);
 	gettimeofday(&mgr->stats.end, NULL);
